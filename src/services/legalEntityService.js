@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API =
-  "http://localhost:5000/api/legal-entities";
+   `${import.meta.env.VITE_API_URL}/legal-entities`;
 
 export const createLegalEntity = async (data) => {
   const res = await axios.post(API, data);

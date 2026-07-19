@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/customer-vendors";
+  `${import.meta.env.VITE_API_URL}/customer-vendors`;
 
 // Create
 export const createCustomerVendor = async (data) => {

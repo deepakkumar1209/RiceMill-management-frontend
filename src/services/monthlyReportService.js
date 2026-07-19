@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API =
-"http://localhost:5000/api/monthly-report";
+`${import.meta.env.VITE_API_URL}/monthly-report`;
 
 export const getMonthlyReport =
 async (fromDate,toDate)=>{
