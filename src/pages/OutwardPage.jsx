@@ -337,7 +337,7 @@ spacing={3}
 >
 {/* Issue Date */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="date"
@@ -345,15 +345,13 @@ spacing={3}
     name="issueDate"
     value={formData.issueDate}
     onChange={handleChange}
-    InputLabelProps={{
-      shrink: true,
-    }}
+    slotProps={{ inputLabel: { shrink: true } }}
   />
 </Grid>
 
 {/* Issue Number */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Issue Number"
@@ -365,7 +363,7 @@ spacing={3}
 
 {/* Acknowledge Date */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="date"
@@ -373,15 +371,13 @@ spacing={3}
     name="acknowledgeDate"
     value={formData.acknowledgeDate}
     onChange={handleChange}
-    InputLabelProps={{
-      shrink: true,
-    }}
+    slotProps={{ inputLabel: { shrink: true } }}
   />
 </Grid>
 
 {/* Acknowledge Number */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Acknowledge Number"
@@ -393,7 +389,7 @@ spacing={3}
 
 {/* Item */}
 
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 4 }}>
   <Autocomplete
     options={items}
     getOptionLabel={(option) =>
@@ -426,7 +422,7 @@ spacing={3}
 
 {/* Vehicle */}
 
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 4 }}>
   <Autocomplete
     options={vehicles}
     getOptionLabel={(option) =>
@@ -458,7 +454,7 @@ spacing={3}
 
 {/* Place Of Deposit */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Place Of Deposit"
@@ -470,7 +466,7 @@ spacing={3}
 
 {/* Sample Number */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Sample Number"
@@ -482,7 +478,7 @@ spacing={3}
 
 {/* Net Weight */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -495,7 +491,7 @@ spacing={3}
 
 {/* Total Net Weight */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -508,7 +504,7 @@ spacing={3}
 
 {/* Balance Rice Due */}
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -546,7 +542,7 @@ spacing={3}
 >
   {/* ONBG */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="ONBG"
@@ -559,7 +555,7 @@ spacing={3}
 
   {/* SSG */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="SSG"
@@ -572,7 +568,7 @@ spacing={3}
 
   {/* SWP */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="SWP"
@@ -585,7 +581,7 @@ spacing={3}
 
   {/* Number Of Bags */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="No Of Bags"
@@ -598,7 +594,7 @@ spacing={3}
 
   {/* Total Number Of Bags */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="Total No Of Bags"
@@ -611,7 +607,7 @@ spacing={3}
 
   {/* Balance Number Of Bags */}
 
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
     <TextField
       fullWidth
       label="Balance No Of Bags"

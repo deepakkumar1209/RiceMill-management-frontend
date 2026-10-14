@@ -343,7 +343,7 @@ return (
   container
   spacing={3}
 >
-  <Grid item xs={12} md={4}>
+  <Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="date"
@@ -351,12 +351,10 @@ return (
     name="issueDate"
     value={formData.issueDate}
     onChange={handleChange}
-    InputLabelProps={{
-      shrink: true,
-    }}
+    slotProps={{ inputLabel: { shrink: true } }}
   />
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Issue Memo No."
@@ -366,7 +364,7 @@ return (
   />
 </Grid>
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="date"
@@ -374,12 +372,10 @@ return (
     name="acknowledgeDate"
     value={formData.acknowledgeDate}
     onChange={handleChange}
-    InputLabelProps={{
-      shrink: true,
-    }}
+    slotProps={{ inputLabel: { shrink: true } }}
   />
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     label="Acknowledge Number"
@@ -389,7 +385,7 @@ return (
   />
 </Grid>
 
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 3 }}>
 <Autocomplete
    disableClearable
   fullWidth
@@ -415,7 +411,7 @@ return (
 />
 </Grid>
 
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 3 }}>
   <Autocomplete
    disableClearable
   fullWidth
@@ -441,7 +437,7 @@ return (
 />
 </Grid>
 
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 3 }}>
  <Autocomplete
    disableClearable
   fullWidth
@@ -469,7 +465,7 @@ return (
   )}
 />
 </Grid>
-<Grid size={{ xs: 12, md: 1.5 }}>
+<Grid size={{ xs: 12, md: 3 }}>
 <Autocomplete
    disableClearable
   fullWidth
@@ -497,7 +493,7 @@ return (
   )}
 />
 </Grid>
-<Grid size={{ xs: 10, md: 2 }}>
+<Grid size={{ xs: 12, md: 2 }}>
   <TextField
     select
     fullWidth
@@ -515,7 +511,7 @@ return (
     </MenuItem>
   </TextField>
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -525,7 +521,7 @@ return (
     onChange={handleChange}
   />
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -560,7 +556,7 @@ return (
   container
   spacing={3}
 >
-<Grid item xs={3}>
+<Grid size={{ xs: 3 }}>
 <TextField
 fullWidth
 label="NBG"
@@ -571,7 +567,7 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid item xs={3}>
+<Grid size={{ xs: 3 }}>
 <TextField
 fullWidth
 label="ONB"
@@ -582,7 +578,7 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid item xs={3}>
+<Grid size={{ xs: 3 }}>
 <TextField
 fullWidth
 label="SSG"
@@ -593,7 +589,7 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid item xs={3}>
+<Grid size={{ xs: 3 }}>
 <TextField
 fullWidth
 label="SWP"
@@ -605,7 +601,7 @@ onChange={handleChange}
 </Grid>
 
 
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
 fullWidth
 label="Total No Of Bags"
@@ -620,7 +616,7 @@ readOnly:true,
 }}
 />
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"
@@ -630,7 +626,7 @@ readOnly:true,
     onChange={handleChange}
   />
 </Grid>
-<Grid item xs={12} md={4}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     fullWidth
     type="number"

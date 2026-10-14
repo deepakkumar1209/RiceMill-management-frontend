@@ -7,6 +7,7 @@ import {
 
 import {
   Box,
+  Divider,
   List,
   ListItemButton,
   ListItemIcon,
@@ -24,223 +25,124 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 
 
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+
+const navItems = [
+  { path: "/dashboard", label: "Dashboard", Icon: Dashboard },
+  { path: "/users", label: "Users", Icon: Group },
+  { path: "/create-user", label: "Create User", Icon: PersonAdd },
+  { path: "/items", label: "Items", Icon: Inventory2 },
+  { path: "/dpcs", label: "DPCs", Icon: BusinessIcon },
+  { path: "/warehouses", label: "Warehouses", Icon: WarehouseIcon },
+  { path: "/vehicles", label: "Vehicles", Icon: DirectionsCarIcon },
+  { path: "/customer-vendor", label: "Customer/Vendor", Icon: BusinessCenterIcon },
+  { path: "/legal-entity", label: "Legal Entity", Icon: BusinessIcon },
+  { path: "/inwards", label: "Inward", Icon: MoveToInboxIcon },
+  { path: "/inward-list", label: "Inward List", Icon: ReceiptLongIcon },
+  { path: "/outwards", label: "Outward", Icon: LocalShippingIcon },
+  { path: "/outward-list", label: "Outward List", Icon: ReceiptLongIcon },
+  { path: "/monthly-report", label: "Monthly Report", Icon: AssessmentIcon },
+];
+
 export default function Sidebar() {
   const navigate = useNavigate();
-  const handleLogout = () => {
-  localStorage.removeItem("token");
+  const location = useLocation();
 
-  navigate("/");
-};
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const itemSx = (active) => ({
+    mx: 1.5,
+    my: 0.3,
+    px: 2,
+    borderRadius: "10px",
+    color: active ? "#fff" : "rgba(255,255,255,0.75)",
+    bgcolor: active ? "rgba(255,255,255,0.12)" : "transparent",
+    "&:hover": {
+      bgcolor: "rgba(255,255,255,0.08)",
+    },
+  });
+
+  const iconSx = (active) => ({
+    color: active ? "#fff" : "rgba(255,255,255,0.75)",
+    minWidth: 36,
+  });
+
   return (
     <Box
-  sx={{
-    width: 240,
-    bgcolor: "#0F172A",
-    color: "#fff",
-    minHeight: "100vh",
-  }}
->
+      sx={{
+        width: 240,
+        flexShrink: 0,
+        bgcolor: "#0F172A",
+        color: "#fff",
+        minHeight: "100vh",
+        position: "sticky",
+        top: 0,
+        alignSelf: "flex-start",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Typography
         sx={{
-          p: 3,
+          px: 3,
+          py: 3,
           fontSize: 22,
           fontWeight: 700,
+          letterSpacing: "0.5px",
         }}
       >
         UMS
       </Typography>
 
-      <List>
-        <ListItemButton
-          onClick={() => navigate("/dashboard")}
-        >
-          <ListItemIcon>
-            <Dashboard sx={{ color: "#fff" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
+
+      <List
+        sx={{
+          flex: 1,
+          py: 1,
+          overflowY: "auto",
+        }}
+      >
+        {navItems.map(({ path, label, Icon }) => {
+          const active = location.pathname === path;
+          return (
+            <ListItemButton
+              key={path}
+              component={Link}
+              to={path}
+              selected={active}
+              sx={itemSx(active)}
+            >
+              <ListItemIcon sx={iconSx(active)}>
+                <Icon fontSize="small" sx={{ color: "inherit" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={label}
+                primaryTypographyProps={{
+                  fontSize: 14,
+                  fontWeight: active ? 600 : 500,
+                }}
+              />
+            </ListItemButton>
+          );
+        })}
+      </List>
+
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
+
+      <List sx={{ py: 1 }}>
+        <ListItemButton onClick={handleLogout} sx={itemSx(false)}>
+          <ListItemIcon sx={iconSx(false)}>
+            <Logout fontSize="small" sx={{ color: "inherit" }} />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+          <ListItemText
+            primary="Logout"
+            primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+          />
         </ListItemButton>
-
-        <ListItemButton
-          onClick={() => navigate("/users")}
-        >
-          <ListItemIcon>
-            <Group sx={{ color: "#fff" }} />
-          </ListItemIcon>
-          <ListItemText primary="Users" />
-        </ListItemButton>
-
-        <ListItemButton
-          onClick={() => navigate("/create-user")}
-        >
-          <ListItemIcon>
-            <PersonAdd sx={{ color: "#fff" }} />
-          </ListItemIcon>
-          <ListItemText primary="Create User" />
-        </ListItemButton>
-        <ListItemButton
-  component={Link}
-  to="/items"
->
-  <ListItemIcon>
-    <Inventory2
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText primary="Items" />
-</ListItemButton>
-
-<ListItemButton
-  onClick={() => navigate("/dpcs")}
->
-  <ListItemIcon>
-    <BusinessIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText primary="DPCs" />
-</ListItemButton>
-<ListItemButton
-  onClick={() =>
-    navigate("/warehouses")
-  }
->
-  <ListItemIcon>
-    <WarehouseIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Warehouses"
-  />
-</ListItemButton>
-
-<ListItemButton
-  onClick={() =>
-    navigate("/vehicles")
-  }
->
-  <ListItemIcon>
-    <DirectionsCarIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Vehicles"
-  />
-</ListItemButton>
-
-<ListItemButton
-  onClick={() =>
-    navigate("/customer-vendor")
-  }
->
-  <ListItemIcon>
-    <BusinessCenterIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Customer/Vendor"
-  />
-</ListItemButton>
-
-<ListItemButton
-  onClick={() =>
-    navigate("/legal-entity")
-  }
->
-  <ListItemIcon>
-    <BusinessIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Legal Entity"
-  />
-</ListItemButton>
-<ListItemButton
-  onClick={() => navigate("/inwards")}
->
-  <ListItemIcon>
-    <MoveToInboxIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText primary="Inward" />
-</ListItemButton>
-<ListItemButton
-  component={Link}
-  to="/inward-list"
->
-  <ListItemIcon>
-    <ReceiptLongIcon 
-    sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Inward List"
-  />
-</ListItemButton>
-<ListItemButton
-  component={Link}
-  to="/outwards"
->
-  <ListItemIcon>
-    <LocalShippingIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Outward"
-  />
-</ListItemButton>
-<ListItemButton
-  component={Link}
-  to="/outward-list"
->
-  <ListItemIcon>
-    <ReceiptLongIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Outward List"
-  />
-</ListItemButton>
-<ListItemButton
-  onClick={() =>
-    navigate("/monthly-report")
-  }
->
-  <ListItemIcon>
-    <AssessmentIcon
-      sx={{ color: "#fff" }}
-    />
-  </ListItemIcon>
-
-  <ListItemText
-    primary="Monthly Report"
-  />
-</ListItemButton>
-
-      <ListItemButton onClick={handleLogout}>
-  <ListItemIcon>
-    <Logout sx={{ color: "#fff" }} />
-  </ListItemIcon>
-  <ListItemText primary="Logout" />
-</ListItemButton>
       </List>
     </Box>
   );

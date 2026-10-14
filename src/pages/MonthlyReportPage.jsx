@@ -247,14 +247,12 @@ export default function MonthlyReportPage() {
             spacing={3}
             alignItems="center"
           >
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 type="date"
                 label="From Date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 value={fromDate}
                 onChange={(e) =>
                   setFromDate(
@@ -264,14 +262,12 @@ export default function MonthlyReportPage() {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 type="date"
                 label="To Date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 value={toDate}
                 onChange={(e) =>
                   setToDate(
@@ -281,7 +277,7 @@ export default function MonthlyReportPage() {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Button
                 fullWidth
                 variant="contained"
@@ -338,11 +334,7 @@ export default function MonthlyReportPage() {
             >
               {/* Opening Weight */}
 
-              <Grid
-                item
-                xs={12}
-                md={4}
-              >
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
                     borderRadius:
@@ -384,11 +376,7 @@ export default function MonthlyReportPage() {
 
               {/* Opening Bags */}
 
-              <Grid
-                item
-                xs={12}
-                md={4}
-              >
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
                     borderRadius:
@@ -449,11 +437,7 @@ export default function MonthlyReportPage() {
             >
               {/* Total Inward */}
 
-              <Grid
-                item
-                xs={12}
-                md={6}
-              >
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -485,11 +469,7 @@ export default function MonthlyReportPage() {
 
               {/* Total Outward */}
 
-              <Grid
-                item
-                xs={12}
-                md={6}
-              >
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -521,11 +501,7 @@ export default function MonthlyReportPage() {
 
               {/* Closing Weight */}
 
-              <Grid
-                item
-                xs={12}
-                md={4}
-              >
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -557,11 +533,7 @@ export default function MonthlyReportPage() {
 
               {/* Total Inward Bags */}
 
-              <Grid
-                item
-                xs={12}
-                md={4}
-              >
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -593,11 +565,7 @@ export default function MonthlyReportPage() {
 
               {/* Total Outward Bags */}
 
-              <Grid
-                item
-                xs={12}
-                md={6}
-              >
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -629,11 +597,7 @@ export default function MonthlyReportPage() {
 
               {/* Closing Bags */}
 
-              <Grid
-                item
-                xs={12}
-                md={6}
-              >
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -870,7 +834,7 @@ export default function MonthlyReportPage() {
                   mt: 2,
                 }}
               >
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Card
                     sx={{
                       borderRadius: "18px",
@@ -903,7 +867,7 @@ export default function MonthlyReportPage() {
                   </Card>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Card
                     sx={{
                       borderRadius: "18px",

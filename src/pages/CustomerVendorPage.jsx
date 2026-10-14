@@ -256,7 +256,7 @@ isVendor:false
             container
             spacing={3}
           >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 label="Name"
@@ -268,7 +268,7 @@ isVendor:false
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 label="Customer ID"
@@ -282,63 +282,63 @@ isVendor:false
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Plot No" name="plotNo" value={formData.plotNo} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Street" name="street" value={formData.street} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Location" name="location" value={formData.location} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="City" name="city" value={formData.city} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Taluk" name="taluk" value={formData.taluk} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="District" name="district" value={formData.district} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="State" name="state" value={formData.state} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Country" name="country" value={formData.country} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Pin Code" name="pinCode" value={formData.pinCode} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Mobile Number" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Fax" name="fax" value={formData.fax} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField fullWidth label="Email" name="email" value={formData.email} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField fullWidth label="Contact Person" name="contactPerson" value={formData.contactPerson} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField fullWidth label="Contact Person Mobile Number" name="contactPersonMobileNumber" value={formData.contactPersonMobileNumber} onChange={handleChange}/>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <FormControlLabel
                 control={
                   <Checkbox

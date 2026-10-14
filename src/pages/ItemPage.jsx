@@ -199,7 +199,7 @@ const [formData, setFormData] = useState({
 
           <Grid container spacing={3}>
 
-  <Grid item xs={12} md={2.4}>
+  <Grid size={{ xs: 12, md: 2.4 }}>
     <TextField
       fullWidth
       label="Item Number"
@@ -209,7 +209,7 @@ const [formData, setFormData] = useState({
     />
   </Grid>
 
-  <Grid item xs={12} md={2.4}>
+  <Grid size={{ xs: 12, md: 2.4 }}>
     <TextField
       fullWidth
       label="Item Name"
@@ -219,7 +219,7 @@ const [formData, setFormData] = useState({
     />
   </Grid>
 
-  <Grid item xs={12} md={2.4}>
+  <Grid size={{ xs: 12, md: 2.4 }}>
     <TextField
       select
       fullWidth
@@ -233,7 +233,7 @@ const [formData, setFormData] = useState({
     </TextField>
   </Grid>
 
-  <Grid item xs={12} md={2.4}>
+  <Grid size={{ xs: 12, md: 2.4 }}>
     <TextField
       fullWidth
       label="OutTurn"
@@ -243,7 +243,7 @@ const [formData, setFormData] = useState({
     />
   </Grid>
 
-  <Grid item xs={12} md={2.4}>
+  <Grid size={{ xs: 12, md: 2.4 }}>
     <TextField
       fullWidth
       label="Unit Of Measure"

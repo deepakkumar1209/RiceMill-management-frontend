@@ -233,7 +233,7 @@ async (id) => {
             container
             spacing={3}
           >
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 label="Vehicle Number"
@@ -247,7 +247,7 @@ async (id) => {
               />
             </Grid>
 
-           <Grid size={{ xs: 10, md: 2 }}>
+           <Grid size={{ xs: 12, md: 2 }}>
              <TextField
   select
   fullWidth
@@ -262,7 +262,7 @@ async (id) => {
 </TextField>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 label="Driver Name"
@@ -276,7 +276,7 @@ async (id) => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 label="Mobile Number"
@@ -290,7 +290,7 @@ async (id) => {
               />
             </Grid>
 
-            <Grid size={{ xs: 10, md: 2 }}>
+            <Grid size={{ xs: 12, md: 2 }}>
               <TextField
                 select
                 fullWidth

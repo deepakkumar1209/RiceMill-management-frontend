@@ -93,7 +93,7 @@ setTimeout(() => {
       <Paper
         elevation={0}
         sx={{
-          maxWidth: "10000px",
+          maxWidth: 1200,
           mx: "auto",
           borderRadius: 4,
           border: "1px solid #E5E7EB",
@@ -134,7 +134,7 @@ setTimeout(() => {
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Username"
@@ -144,7 +144,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Password"
@@ -174,7 +174,7 @@ setTimeout(() => {
             </TextField>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               select
@@ -206,7 +206,7 @@ setTimeout(() => {
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Email Address"
@@ -216,7 +216,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Mobile Number"
@@ -226,7 +226,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               label="Fax"
@@ -249,7 +249,7 @@ setTimeout(() => {
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Plot No"
@@ -259,7 +259,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Street"
@@ -269,7 +269,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Location"
@@ -279,7 +279,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="City"
@@ -289,7 +289,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Taluk"
@@ -299,7 +299,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="District"
@@ -309,7 +309,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="State"
@@ -319,7 +319,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Country"
@@ -329,7 +329,7 @@ setTimeout(() => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               label="Pin Code"
