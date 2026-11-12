@@ -14,6 +14,15 @@ import {
   Chip,
   IconButton,
   InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  MenuItem,
+  Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -24,17 +33,44 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
-import { getUsers } from "../services/userService";
+import {
+  getUsers,
+  updateUser,
+  deleteUser,
+} from "../services/userService";
+
+const initialFormData = {
+  username: "",
+  password: "",
+  role: "",
+  status: "Active",
+  email: "",
+  mobileNumber: "",
+  fax: "",
+  plotNo: "",
+  street: "",
+  location: "",
+  city: "",
+  taluk: "",
+  district: "",
+  state: "",
+  country: "",
+  pinCode: "",
+};
 
 export default function UserListPage() {
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [formData, setFormData] = useState(initialFormData);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const loadUsers = async () => {
     try {
@@ -42,6 +78,99 @@ export default function UserListPage() {
       setUsers(data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+    getUsers()
+      .then((data) => {
+        if (active) setUsers(data);
+      })
+      .catch((error) => console.log(error));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleEdit = (user) => {
+    setEditId(user._id);
+    setFormData({
+      username: user.username || "",
+      password: "",
+      role: user.role || "",
+      status: user.status || "Active",
+      email: user.email || "",
+      mobileNumber: user.mobileNumber || "",
+      fax: user.fax || "",
+      plotNo: user.plotNo || "",
+      street: user.street || "",
+      location: user.location || "",
+      city: user.city || "",
+      taluk: user.taluk || "",
+      district: user.district || "",
+      state: user.state || "",
+      country: user.country || "",
+      pinCode: user.pinCode || "",
+    });
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+    setEditId(null);
+    setFormData(initialFormData);
+  };
+
+  const handleEditChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleUpdateUser = async () => {
+    try {
+      await updateUser(editId, formData);
+      setSnackbar({
+        open: true,
+        message: "User Updated Successfully",
+        severity: "success",
+      });
+      handleCloseEdit();
+      loadUsers();
+    } catch (error) {
+      console.log(error);
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.message || "Failed to update user",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Delete this user?");
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteUser(id);
+      setSnackbar({
+        open: true,
+        message: "User Deleted Successfully",
+        severity: "success",
+      });
+      loadUsers();
+    } catch (error) {
+      console.log(error);
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.message || "Failed to delete user",
+        severity: "error",
+      });
     }
   };
 
@@ -247,12 +376,14 @@ export default function UserListPage() {
                       >
                         <IconButton
                           color="primary"
+                          onClick={() => handleEdit(user)}
                         >
                           <EditIcon />
                         </IconButton>
 
                         <IconButton
                           color="error"
+                          onClick={() => handleDelete(user._id)}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -277,6 +408,251 @@ export default function UserListPage() {
             </Table>
           </TableContainer>
         </Paper>
+
+        {/* Edit User Dialog */}
+        <Dialog
+          open={openEdit}
+          onClose={handleCloseEdit}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle sx={{ fontWeight: 700 }}>
+            Edit User
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+            >
+              Account Information
+            </Typography>
+            <Grid container spacing={2} mb={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  name="password"
+                  placeholder="Leave blank to keep current password"
+                  value={formData.password}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleEditChange}
+                >
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleEditChange}
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+            >
+              Contact Information
+            </Typography>
+            <Grid container spacing={2} mb={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Email Address"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Mobile Number"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  label="Fax"
+                  name="fax"
+                  value={formData.fax}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+            >
+              Address Information
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Plot No"
+                  name="plotNo"
+                  value={formData.plotNo}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Street"
+                  name="street"
+                  value={formData.street}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="City"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Taluk"
+                  name="taluk"
+                  value={formData.taluk}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="District"
+                  name="district"
+                  value={formData.district}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="State"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  label="Pin Code"
+                  name="pinCode"
+                  value={formData.pinCode}
+                  onChange={handleEditChange}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={handleCloseEdit}
+              sx={{ textTransform: "none", borderRadius: "10px" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleUpdateUser}
+              sx={{
+                bgcolor: "#111827",
+                textTransform: "none",
+                borderRadius: "10px",
+                fontWeight: 600,
+                "&:hover": { bgcolor: "#1F2937" },
+              }}
+            >
+              Update User
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={5000}
+          onClose={() =>
+            setSnackbar({ ...snackbar, open: false })
+          }
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <Alert
+            severity={snackbar.severity}
+            variant="filled"
+            onClose={() =>
+              setSnackbar({ ...snackbar, open: false })
+            }
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

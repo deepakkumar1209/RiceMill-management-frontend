@@ -22,10 +22,15 @@ import {
 } from "@mui/material";
 import {
   createInward,
+  getInward,
   getInwards,
   updateInward,
   deleteInward,
 } from "../services/inwardService";
+import {
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { getItems } from "../services/itemService";
 
@@ -36,6 +41,10 @@ import { getWarehouses } from "../services/warehouseService";
 import { getVehicles } from "../services/vehicleService";
 
 export default function InwardPage() {
+const [searchParams] = useSearchParams();
+const idParam = searchParams.get("id");
+const navigate = useNavigate();
+
 const [success,setSuccess]=useState(false);
 
 const [deleteSuccess,setDeleteSuccess]=useState(false);
@@ -84,6 +93,49 @@ useEffect(() => {
     loadVehicles();
 }, []);
 
+useEffect(() => {
+  if (!idParam) return;
+
+  let active = true;
+  getInward(idParam)
+    .then((data) => {
+      if (!active || !data) return;
+      setEditId(data._id);
+      setFormData({
+        issueDate: data.issueDate
+          ? String(data.issueDate).substring(0, 10)
+          : new Date().toISOString().substring(0, 10),
+        acknowledgeDate: data.acknowledgeDate
+          ? String(data.acknowledgeDate).substring(0, 10)
+          : new Date().toISOString().substring(0, 10),
+        issueMemoNo: data.issueMemoNo ?? "",
+        acknowledgeNumber: data.acknowledgeNumber ?? "",
+        item: data.item ?? "",
+        dpcFrom: data.dpcFrom ?? "",
+        warehouse: data.warehouse ?? "",
+        lorryNo: data.lorryNo ?? "",
+        variety: data.variety ?? "A",
+        netWeight: data.netWeight ?? "",
+        totalNetWeight: data.totalNetWeight ?? "",
+        nbg: data.nbg ?? 0,
+        onb: data.onb ?? 0,
+        ssg: data.ssg ?? 0,
+        swp: data.swp ?? 0,
+        noOfBags: data.noOfBags ?? 0,
+        totalNoOfBags: data.totalNoOfBags ?? 0,
+        riceOutturn: data.riceOutturn ?? "",
+        totalRiceDue: data.totalRiceDue ?? "",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return () => {
+    active = false;
+  };
+}, [idParam]);
+
 const [items, setItems] = useState([]);
 
 const [dpcs, setDpcs] = useState([]);
@@ -106,10 +158,10 @@ const loadItems = async () => {
 
   setItems(data);
 
-  if (data.length > 0) {
+  if (!idParam && data.length > 0) {
     setFormData((prev) => ({
       ...prev,
-      item: data[0].itemName,
+      item: prev.item || data[0].itemName,
     }));
   }
 };
@@ -119,10 +171,10 @@ const loadDpcs = async () => {
 
   setDpcs(data);
 
-  if (data.length > 0) {
+  if (!idParam && data.length > 0) {
     setFormData((prev) => ({
       ...prev,
-      dpcFrom: data[0].dpcName,
+      dpcFrom: prev.dpcFrom || data[0].dpcName,
     }));
   }
 };
@@ -132,10 +184,10 @@ const loadWarehouses = async () => {
 
   setWarehouses(data);
 
-  if (data.length > 0) {
+  if (!idParam && data.length > 0) {
     setFormData((prev) => ({
       ...prev,
-      warehouse: data[0].warehouseName,
+      warehouse: prev.warehouse || data[0].warehouseName,
     }));
   }
 };
@@ -145,10 +197,10 @@ const loadVehicles = async () => {
 
   setVehicles(data);
 
-  if (data.length > 0) {
+  if (!idParam && data.length > 0) {
     setFormData((prev) => ({
       ...prev,
-      lorryNo: data[0].vehicleNumber,
+      lorryNo: prev.lorryNo || data[0].vehicleNumber,
     }));
   }
 };
@@ -245,6 +297,10 @@ const handleSubmit = async () => {
 const resetForm = () => {
 
   setEditId(null);
+
+  if (idParam) {
+    navigate("/inwards", { replace: true });
+  }
 
   setFormData({
 
