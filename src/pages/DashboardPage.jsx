@@ -6,19 +6,52 @@ import {
 } from "@mui/material";
 
 import Sidebar from "../components/Sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUsers } from "../services/userService";
+
 export default function DashboardPage() {
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
-useEffect(() => {
-  const role =
-    localStorage.getItem("role");
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+  });
 
-  if (role !== "SUPER_ADMIN") {
-    navigate("/user-home");
-  }
-}, []);
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (role !== "SUPER_ADMIN") {
+      navigate("/user-home");
+      return;
+    }
+
+    let isMounted = true;
+
+    getUsers()
+      .then((data) => {
+        if (!isMounted || !Array.isArray(data)) return;
+        const total = data.length;
+        const active = data.filter(
+          (u) => (u.status || "").toLowerCase() === "active"
+        ).length;
+        const inactive = total - active;
+
+        setStats({
+          total,
+          active,
+          inactive,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
   return (
     <Box sx={{ display: "flex" }}>
       <Sidebar />
@@ -55,7 +88,7 @@ useEffect(() => {
                 variant="h4"
                 fontWeight="bold"
               >
-                0
+                {stats.total}
               </Typography>
             </CardContent>
           </Card>
@@ -68,7 +101,7 @@ useEffect(() => {
                 variant="h4"
                 fontWeight="bold"
               >
-                0
+                {stats.active}
               </Typography>
             </CardContent>
           </Card>
@@ -81,7 +114,7 @@ useEffect(() => {
                 variant="h4"
                 fontWeight="bold"
               >
-                0
+                {stats.inactive}
               </Typography>
             </CardContent>
           </Card>
