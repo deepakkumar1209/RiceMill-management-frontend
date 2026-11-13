@@ -37,6 +37,9 @@ export default function CreateUserPage() {
   });
 
   const [success, setSuccess] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -46,14 +49,38 @@ export default function CreateUserPage() {
   };
 
   const handleSubmit = async () => {
+    if (!formData.username.trim()) {
+      setErrorMessage("Please enter a username");
+      setErrorOpen(true);
+      return;
+    }
+    if (!formData.password) {
+      setErrorMessage("Please enter a password");
+      setErrorOpen(true);
+      return;
+    }
+    if (!formData.role) {
+      setErrorMessage("Please select a role (Admin or User)");
+      setErrorOpen(true);
+      return;
+    }
+
     try {
-      await createUser(formData);
+      setLoading(true);
+      const payload = { ...formData, username: formData.username.trim() };
+      if (!payload.email || !payload.email.trim()) {
+        delete payload.email;
+      } else {
+        payload.email = payload.email.trim();
+      }
 
-     setSuccess(true);
+      await createUser(payload);
 
-setTimeout(() => {
-  navigate("/users");
-}, 1500);
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate("/users");
+      }, 1500);
 
       setFormData({
         username: "",
@@ -75,6 +102,13 @@ setTimeout(() => {
       });
     } catch (error) {
       console.log(error);
+      const msg =
+        error.response?.data?.message ||
+        "Failed to create user. Please check your inputs.";
+      setErrorMessage(msg);
+      setErrorOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,6 +170,7 @@ setTimeout(() => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
+              required
               fullWidth
               label="Username"
               name="username"
@@ -146,6 +181,7 @@ setTimeout(() => {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
+              required
               fullWidth
               label="Password"
               type="password"
@@ -155,8 +191,9 @@ setTimeout(() => {
             />
           </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
+              required
               fullWidth
               select
               label="Role"
@@ -348,24 +385,36 @@ setTimeout(() => {
           spacing={2}
           justifyContent="flex-end"
         >
-         
-
-
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate("/users")}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
 
           <Button
             variant="contained"
             size="large"
+            disabled={loading}
             onClick={handleSubmit}
             sx={{
               borderRadius: 2,
               px: 4,
               bgcolor: "#111827",
+              textTransform: "none",
+              fontWeight: 600,
               "&:hover": {
                 bgcolor: "#1F2937",
               },
             }}
           >
-            Create User
+            {loading ? "Creating..." : "Create User"}
           </Button>
         </Stack>
       </Paper>
@@ -373,12 +422,30 @@ setTimeout(() => {
       <Snackbar
         open={success}
         autoHideDuration={3000}
+        onClose={() => setSuccess(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           severity="success"
           variant="filled"
+          onClose={() => setSuccess(false)}
         >
           User Created Successfully
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={errorOpen}
+        autoHideDuration={5000}
+        onClose={() => setErrorOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setErrorOpen(false)}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </Box>
