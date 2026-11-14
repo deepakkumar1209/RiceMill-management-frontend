@@ -141,9 +141,11 @@ export default function MonthlyReportPage() {
 
         console.log(error);
 
-        alert(
-          "Unable to close month."
-        );
+        const errorMsg =
+          error.response?.data?.message ||
+          "Unable to close month.";
+
+        alert(errorMsg);
 
       } finally {
 
