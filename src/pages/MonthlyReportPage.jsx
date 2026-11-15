@@ -835,50 +835,51 @@ export default function MonthlyReportPage() {
             </Box>
 
             {/* Variety Cards (Side-by-side with separate RAW PADDY and BOILED RICE counts) */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid container spacing={2.5} sx={{ mb: 4 }}>
               {varietyItemDetails.map((grade) => (
                 <Grid size={{ xs: 12, lg: 6 }} key={grade.key}>
                   <Card
                     sx={{
-                      borderRadius: "22px",
+                      borderRadius: "20px",
                       border: `2px solid ${grade.border}`,
                       bgcolor: "#FFFFFF",
-                      boxShadow: "0px 8px 26px rgba(0,0,0,0.04)",
+                      boxShadow: "0px 6px 20px rgba(0,0,0,0.03)",
                       overflow: "hidden",
                     }}
                   >
                     {/* Grade Header */}
                     <Box
                       sx={{
-                        p: 2.2,
-                        px: 3,
+                        p: 2,
+                        px: 2.5,
                         bgcolor: grade.bg,
                         borderBottom: "1px solid #E5E7EB",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                         flexWrap: "wrap",
-                        gap: 1.5,
+                        gap: 1.2,
                       }}
                     >
-                      <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Stack direction="row" spacing={1.2} alignItems="center">
                         <Chip
                           label={grade.label}
                           sx={{
                             fontWeight: 800,
-                            fontSize: "0.95rem",
+                            fontSize: "0.9rem",
                             bgcolor: grade.color,
                             color: "#FFFFFF",
                             px: 0.5,
+                            height: 26,
                           }}
                         />
-                        <Typography variant="subtitle1" fontWeight={800} color="#111827">
+                        <Typography variant="subtitle1" fontWeight={800} color="#111827" sx={{ fontSize: "0.95rem" }}>
                           {grade.fullLabel}
                         </Typography>
                       </Stack>
 
                       {/* Header Badges */}
-                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                      <Stack direction="row" spacing={0.8} alignItems="center" flexWrap="wrap">
                         <Chip
                           label={`Inward: ${grade.summary.inwardCount || 0} Load${(grade.summary.inwardCount || 0) === 1 ? "" : "s"}`}
                           size="small"
@@ -887,6 +888,8 @@ export default function MonthlyReportPage() {
                             bgcolor: "#DCFCE7",
                             color: "#166534",
                             border: "1px solid #86EFAC",
+                            height: 22,
+                            fontSize: "0.72rem",
                           }}
                         />
                         <Chip
@@ -897,6 +900,8 @@ export default function MonthlyReportPage() {
                             bgcolor: "#DBEAFE",
                             color: "#1E40AF",
                             border: "1px solid #93C5FD",
+                            height: 22,
+                            fontSize: "0.72rem",
                           }}
                         />
                         <Chip
@@ -907,36 +912,38 @@ export default function MonthlyReportPage() {
                             bgcolor: "#111827",
                             color: "#34D399",
                             border: "1px solid #374151",
+                            height: 22,
+                            fontSize: "0.72rem",
                           }}
                         />
                       </Stack>
                     </Box>
 
                     {/* Card Content: Itemized RAW PADDY & BOILED RICE */}
-                    <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
-                      <Stack spacing={2.5}>
+                    <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
+                      <Stack spacing={2}>
                         {/* 1. SEPARATE ITEM: RAW PADDY */}
                         <Box
                           sx={{
-                            borderRadius: "16px",
+                            borderRadius: "14px",
                             border: "1.5px solid #86EFAC",
                             bgcolor: "#F0FDF4",
-                            p: 2,
+                            p: 1.6,
                           }}
                         >
                           {/* Item Header Strip */}
-                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
-                              <Box sx={{ p: 0.6, borderRadius: "8px", bgcolor: "#16A34A", color: "#FFFFFF", display: "flex", alignItems: "center" }}>
-                                <AgricultureIcon sx={{ fontSize: 18 }} />
+                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.2, flexWrap: "wrap", gap: 0.8 }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Box sx={{ p: 0.5, borderRadius: "6px", bgcolor: "#16A34A", color: "#FFFFFF", display: "flex", alignItems: "center" }}>
+                                <AgricultureIcon sx={{ fontSize: 16 }} />
                               </Box>
-                              <Typography variant="subtitle2" fontWeight={800} color="#166534">
+                              <Typography variant="subtitle2" fontWeight={800} color="#166534" sx={{ fontSize: "0.85rem" }}>
                                 RAW PADDY · {grade.label} Grain Stock
                               </Typography>
                             </Stack>
 
                             <Chip
-                              icon={<InventoryIcon sx={{ fontSize: 15, color: "#166534 !important" }} />}
+                              icon={<InventoryIcon sx={{ fontSize: 14, color: "#166534 !important" }} />}
                               label={`Available: ${(grade.paddy.closingWeight || 0).toLocaleString()} Kg · ${(grade.paddy.closingBags || 0).toLocaleString()} Bags`}
                               size="small"
                               sx={{
@@ -944,204 +951,167 @@ export default function MonthlyReportPage() {
                                 bgcolor: "#DCFCE7",
                                 color: "#166534",
                                 border: "1px solid #86EFAC",
+                                height: 22,
+                                fontSize: "0.72rem",
                               }}
                             />
                           </Box>
 
-                          {/* 3 Stat Boxes with Decent Icons */}
-                          <Grid container spacing={1.5}>
+                          {/* 3 Stat Boxes Sized Perfectly to Prevent Clipping & Overlap */}
+                          <Grid container spacing={1}>
                             {/* Inward Received */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#FFFFFF",
                                   border: "1px solid #BBF7D0",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 2px 6px rgba(0,0,0,0.02)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "#DCFCE7",
-                                    color: "#16A34A",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <ArrowDownwardIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" color="#166534" fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    INWARD
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <ArrowDownwardIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" color="#166534" fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    INWARD RECEIVED
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#166534" sx={{ lineHeight: 1.2 }}>
-                                    +{(grade.paddy.inwardWeight || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" color="#15803D" fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    +{(grade.paddy.inwardBags || 0).toLocaleString()} Bags · {grade.paddy.inwardCount || 0} Load
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#166534" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  +{(grade.paddy.inwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#15803D" fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  +{(grade.paddy.inwardBags || 0).toLocaleString()} Bags · {grade.paddy.inwardCount || 0} Load
+                                </Typography>
                               </Box>
                             </Grid>
 
                             {/* Outward Issued */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#FFFFFF",
                                   border: "1px solid #E5E7EB",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 2px 6px rgba(0,0,0,0.02)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "#F3F4F6",
-                                    color: "#6B7280",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <LocalShippingIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    OUTWARD
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "#F3F4F6", color: "#6B7280", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <LocalShippingIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    OUTWARD ISSUED
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#4B5563" sx={{ lineHeight: 1.2 }}>
-                                    -{(grade.paddy.outwardWeight || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" color="#6B7280" fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    -{(grade.paddy.outwardBags || 0).toLocaleString()} Bags · {grade.paddy.outwardCount || 0} Issue
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#4B5563" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  -{(grade.paddy.outwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#6B7280" fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  -{(grade.paddy.outwardBags || 0).toLocaleString()} Bags · {grade.paddy.outwardCount || 0} Issue
+                                </Typography>
                               </Box>
                             </Grid>
 
                             {/* Paddy Balance */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#14532D",
                                   color: "#FFFFFF",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 4px 12px rgba(20,83,45,0.2)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "rgba(255,255,255,0.15)",
-                                    color: "#86EFAC",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <InventoryIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    BALANCE
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "rgba(255,255,255,0.18)", color: "#86EFAC", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <InventoryIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    PADDY BALANCE
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#FFFFFF" sx={{ lineHeight: 1.2 }}>
-                                    {(grade.paddy.closingWeight || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5} sx={{ color: "#BBF7D0" }}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    {(grade.paddy.closingBags || 0).toLocaleString()} Bags Available
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#FFFFFF" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  {(grade.paddy.closingWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ color: "#BBF7D0", fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  {(grade.paddy.closingBags || 0).toLocaleString()} Bags Avail.
+                                </Typography>
                               </Box>
                             </Grid>
                           </Grid>
 
-                          {/* Paddy Gunny Bags Bar - Full Width with Proper Spacing & No Blank Space */}
+                          {/* Paddy Gunny Bags Bar - Fits Comfortably Without Awkward Wrap */}
                           <Box
                             sx={{
-                              p: 1.2,
-                              px: 2,
-                              mt: 1.5,
-                              borderRadius: "12px",
+                              p: 1,
+                              px: 1.5,
+                              mt: 1.2,
+                              borderRadius: "10px",
                               bgcolor: "#FFFFFF",
                               border: "1px solid #BBF7D0",
                               display: "flex",
-                              justifyContent: "space-between",
                               alignItems: "center",
                               flexWrap: "wrap",
-                              gap: 1,
+                              gap: 0.8,
                             }}
                           >
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <ShoppingBagIcon sx={{ fontSize: 18, color: "#166534" }} />
-                              <Typography variant="caption" fontWeight={800} color="#166534">
-                                Paddy Gunny Bags:
+                            <Stack direction="row" spacing={0.6} alignItems="center" sx={{ mr: 0.5 }}>
+                              <ShoppingBagIcon sx={{ fontSize: 16, color: "#166534" }} />
+                              <Typography variant="caption" fontWeight={800} color="#166534" sx={{ fontSize: "0.74rem" }}>
+                                Gunny Bags:
                               </Typography>
                             </Stack>
-                            <Stack direction="row" spacing={0.8} alignItems="center" flexWrap="wrap">
-                              <Chip label={`NBG: ${grade.paddy.nbg || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BBF7D0" }} />
-                              <Chip label={`ONBG: ${grade.paddy.onb || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BBF7D0" }} />
-                              <Chip label={`SSG: ${grade.paddy.ssg || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BBF7D0" }} />
-                              <Chip label={`SWP: ${grade.paddy.swp || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BBF7D0" }} />
-                              <Chip label={`USB: ${grade.paddy.usb || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BBF7D0" }} />
+                            <Stack direction="row" spacing={0.6} alignItems="center" flexWrap="wrap">
+                              <Chip label={`NBG: ${grade.paddy.nbg || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0", px: 0.3 }} />
+                              <Chip label={`ONBG: ${grade.paddy.onb || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0", px: 0.3 }} />
+                              <Chip label={`SSG: ${grade.paddy.ssg || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0", px: 0.3 }} />
+                              <Chip label={`SWP: ${grade.paddy.swp || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0", px: 0.3 }} />
+                              <Chip label={`USB: ${grade.paddy.usb || 0}`} size="small" sx={{ bgcolor: "#F0FDF4", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0", px: 0.3 }} />
                             </Stack>
-                            <Chip
-                              label={`Total Gunny: ${(grade.paddy.closingBags || 0).toLocaleString()} Bags`}
-                              size="small"
-                              sx={{ bgcolor: "#DCFCE7", color: "#166534", fontWeight: 800, height: 22, border: "1px solid #86EFAC" }}
-                            />
                           </Box>
                         </Box>
 
                         {/* 2. SEPARATE ITEM: BOILED RICE */}
                         <Box
                           sx={{
-                            borderRadius: "16px",
+                            borderRadius: "14px",
                             border: "1.5px solid #93C5FD",
                             bgcolor: "#EFF6FF",
-                            p: 2,
+                            p: 1.6,
                           }}
                         >
                           {/* Item Header Strip */}
-                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
-                              <Box sx={{ p: 0.6, borderRadius: "8px", bgcolor: "#2563EB", color: "#FFFFFF", display: "flex", alignItems: "center" }}>
-                                <RestaurantIcon sx={{ fontSize: 18 }} />
+                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.2, flexWrap: "wrap", gap: 0.8 }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Box sx={{ p: 0.5, borderRadius: "6px", bgcolor: "#2563EB", color: "#FFFFFF", display: "flex", alignItems: "center" }}>
+                                <RestaurantIcon sx={{ fontSize: 16 }} />
                               </Box>
-                              <Typography variant="subtitle2" fontWeight={800} color="#1E40AF">
-                                BOILED RICE · {grade.label} Milled Rice (Outturn: 68%)
+                              <Typography variant="subtitle2" fontWeight={800} color="#1E40AF" sx={{ fontSize: "0.85rem" }}>
+                                BOILED RICE · {grade.label} Milled Rice (68%)
                               </Typography>
                             </Stack>
 
                             <Chip
-                              icon={<LocalShippingIcon sx={{ fontSize: 15, color: "#1E40AF !important" }} />}
+                              icon={<LocalShippingIcon sx={{ fontSize: 14, color: "#1E40AF !important" }} />}
                               label={`Dispatched: ${(grade.rice.outwardWeight || 0).toLocaleString()} Kg · ${(grade.rice.outwardBags || 0).toLocaleString()} Bags`}
                               size="small"
                               sx={{
@@ -1149,218 +1119,181 @@ export default function MonthlyReportPage() {
                                 bgcolor: "#DBEAFE",
                                 color: "#1E40AF",
                                 border: "1px solid #93C5FD",
+                                height: 22,
+                                fontSize: "0.72rem",
                               }}
                             />
                           </Box>
 
-                          {/* 3 Stat Boxes with Decent Icons */}
-                          <Grid container spacing={1.5}>
+                          {/* 3 Stat Boxes Sized Perfectly to Prevent Clipping & Overlap */}
+                          <Grid container spacing={1}>
                             {/* Inward Received */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#FFFFFF",
                                   border: "1px solid #E5E7EB",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 2px 6px rgba(0,0,0,0.02)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "#F3F4F6",
-                                    color: "#6B7280",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <ArrowDownwardIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    INWARD
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "#F3F4F6", color: "#6B7280", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <ArrowDownwardIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    INWARD RECEIVED
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#4B5563" sx={{ lineHeight: 1.2 }}>
-                                    +{(grade.rice.inwardWeight || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" color="#6B7280" fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    +{(grade.rice.inwardBags || 0).toLocaleString()} Bags · {grade.rice.inwardCount || 0} Load
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#4B5563" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  +{(grade.rice.inwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#6B7280" fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  +{(grade.rice.inwardBags || 0).toLocaleString()} Bags · {grade.rice.inwardCount || 0} Load
+                                </Typography>
                               </Box>
                             </Grid>
 
                             {/* Actual Rice Outward */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#FFFFFF",
                                   border: "1px solid #BFDBFE",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 2px 6px rgba(0,0,0,0.02)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "#DBEAFE",
-                                    color: "#1E40AF",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <LocalShippingIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" color="#1E40AF" fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    OUTWARD
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "#DBEAFE", color: "#1E40AF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <LocalShippingIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" color="#1E40AF" fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    ACTUAL RICE OUTWARD
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#1E40AF" sx={{ lineHeight: 1.2 }}>
-                                    -{(grade.rice.outwardWeight || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" color="#1D4ED8" fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    -{(grade.rice.outwardBags || 0).toLocaleString()} Bags · {grade.rice.outwardCount || 0} Issues
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#1E40AF" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  -{(grade.rice.outwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#1D4ED8" fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  -{(grade.rice.outwardBags || 0).toLocaleString()} Bags · {grade.rice.outwardCount || 0} Issues
+                                </Typography>
                               </Box>
                             </Grid>
 
                             {/* Paddy Deducted */}
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 4 }} sx={{ minWidth: 0 }}>
                               <Box
                                 sx={{
-                                  p: 1.8,
-                                  borderRadius: "14px",
+                                  p: 1.2,
+                                  borderRadius: "10px",
                                   bgcolor: "#1E3A8A",
                                   color: "#FFFFFF",
+                                  boxSizing: "border-box",
+                                  height: "100%",
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 1.5,
-                                  boxShadow: "0px 4px 12px rgba(30,58,138,0.2)",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <Box
-                                  sx={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: "12px",
-                                    bgcolor: "rgba(255,255,255,0.15)",
-                                    color: "#93C5FD",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <ScaleIcon sx={{ fontSize: 22 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.4 }}>
+                                  <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.68rem" }}>
+                                    DEDUCTION
+                                  </Typography>
+                                  <Box sx={{ width: 22, height: 22, borderRadius: "5px", bgcolor: "rgba(255,255,255,0.18)", color: "#93C5FD", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <ScaleIcon sx={{ fontSize: 14 }} />
+                                  </Box>
                                 </Box>
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                  <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={800} letterSpacing="0.5px" display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    PADDY DEDUCTED (68%)
-                                  </Typography>
-                                  <Typography variant="h6" fontWeight={800} color="#FFFFFF" sx={{ lineHeight: 1.2 }}>
-                                    -{(grade.rice.paddyEquivalent || 0).toLocaleString()}
-                                    <Typography component="span" variant="caption" fontWeight={700} ml={0.5} sx={{ color: "#BFDBFE" }}>Kg</Typography>
-                                  </Typography>
-                                  <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={700} display="block" sx={{ whiteSpace: "nowrap" }}>
-                                    Milled Grain Equivalent
-                                  </Typography>
-                                </Box>
+                                <Typography variant="h6" fontWeight={800} color="#FFFFFF" sx={{ fontSize: { xs: "0.92rem", sm: "1.02rem" }, lineHeight: 1.2, my: 0.2 }}>
+                                  -{(grade.rice.paddyEquivalent || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ color: "#BFDBFE", fontSize: "0.68rem" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={700} sx={{ fontSize: "0.68rem", lineHeight: 1.1 }}>
+                                  Paddy Eqv. (68%)
+                                </Typography>
                               </Box>
                             </Grid>
                           </Grid>
 
-                          {/* Rice Gunny Bags Bar - Full Width with Proper Spacing & No Blank Space */}
+                          {/* Rice Gunny Bags Bar - Fits Comfortably Without Awkward Wrap */}
                           <Box
                             sx={{
-                              p: 1.2,
-                              px: 2,
-                              mt: 1.5,
-                              borderRadius: "12px",
+                              p: 1,
+                              px: 1.5,
+                              mt: 1.2,
+                              borderRadius: "10px",
                               bgcolor: "#FFFFFF",
                               border: "1px solid #BFDBFE",
                               display: "flex",
-                              justifyContent: "space-between",
                               alignItems: "center",
                               flexWrap: "wrap",
-                              gap: 1,
+                              gap: 0.8,
                             }}
                           >
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <ShoppingBagIcon sx={{ fontSize: 18, color: "#1E40AF" }} />
-                              <Typography variant="caption" fontWeight={800} color="#1E40AF">
-                                Rice Gunny Bags Issued:
+                            <Stack direction="row" spacing={0.6} alignItems="center" sx={{ mr: 0.5 }}>
+                              <ShoppingBagIcon sx={{ fontSize: 16, color: "#1E40AF" }} />
+                              <Typography variant="caption" fontWeight={800} color="#1E40AF" sx={{ fontSize: "0.74rem" }}>
+                                Gunny Bags:
                               </Typography>
                             </Stack>
-                            <Stack direction="row" spacing={0.8} alignItems="center" flexWrap="wrap">
-                              <Chip label={`SSG: ${Math.abs(grade.rice.ssg || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BFDBFE" }} />
-                              <Chip label={`ONBG: ${Math.abs(grade.rice.onb || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BFDBFE" }} />
-                              <Chip label={`SWP: ${Math.abs(grade.rice.swp || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BFDBFE" }} />
-                              <Chip label={`USB: ${Math.abs(grade.rice.usb || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 22, fontSize: "0.75rem", border: "1px solid #BFDBFE" }} />
+                            <Stack direction="row" spacing={0.6} alignItems="center" flexWrap="wrap">
+                              <Chip label={`SSG: ${Math.abs(grade.rice.ssg || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE", px: 0.3 }} />
+                              <Chip label={`ONBG: ${Math.abs(grade.rice.onb || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE", px: 0.3 }} />
+                              <Chip label={`SWP: ${Math.abs(grade.rice.swp || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE", px: 0.3 }} />
+                              <Chip label={`USB: ${Math.abs(grade.rice.usb || 0)}`} size="small" sx={{ bgcolor: "#EFF6FF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE", px: 0.3 }} />
                             </Stack>
-                            <Chip
-                              label={`Total Dispatched: ${(grade.rice.outwardBags || 0).toLocaleString()} Bags`}
-                              size="small"
-                              sx={{ bgcolor: "#DBEAFE", color: "#1E40AF", fontWeight: 800, height: 22, border: "1px solid #93C5FD" }}
-                            />
                           </Box>
                         </Box>
 
                         {/* 3. CONSOLIDATED GRADE NET STOCK FOOTER */}
                         <Box
                           sx={{
-                            borderRadius: "14px",
+                            borderRadius: "12px",
                             bgcolor: "#111827",
                             color: "#FFFFFF",
-                            p: 2,
-                            px: 2.5,
+                            p: 1.8,
+                            px: 2.2,
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
                             flexWrap: "wrap",
-                            gap: 1.5,
+                            gap: 1.2,
                           }}
                         >
-                          <Stack direction="row" spacing={1.5} alignItems="center">
-                            <Box sx={{ p: 1, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.1)", color: "#34D399", display: "flex", alignItems: "center" }}>
-                              <AccountBalanceIcon sx={{ fontSize: 24 }} />
+                          <Stack direction="row" spacing={1.2} alignItems="center">
+                            <Box sx={{ p: 0.8, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.1)", color: "#34D399", display: "flex", alignItems: "center" }}>
+                              <AccountBalanceIcon sx={{ fontSize: 20 }} />
                             </Box>
                             <Box>
-                              <Typography variant="caption" sx={{ color: "#9CA3AF" }} fontWeight={800} letterSpacing="0.5px">
+                              <Typography variant="caption" sx={{ color: "#9CA3AF" }} fontWeight={800} letterSpacing="0.3px" sx={{ fontSize: "0.72rem" }}>
                                 {grade.label} CONSOLIDATED NET BALANCE
                               </Typography>
-                              <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.85)" }} fontWeight={600} mt={0.2}>
-                                Inward: +{(grade.summary.inwardWeight || 0).toLocaleString()} Kg ({grade.summary.inwardBags || 0} Bags) · Outward: -{(grade.summary.outwardWeight || 0).toLocaleString()} Kg ({grade.summary.outwardBags || 0} Bags)
+                              <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.85)" }} fontWeight={600} mt={0.2} sx={{ fontSize: "0.75rem" }}>
+                                In: +{(grade.summary.inwardWeight || 0).toLocaleString()} Kg ({grade.summary.inwardBags || 0} Bags) · Out: -{(grade.summary.outwardWeight || 0).toLocaleString()} Kg ({grade.summary.outwardBags || 0} Bags)
                               </Typography>
                             </Box>
                           </Stack>
 
                           <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
-                            <Typography variant="h5" fontWeight={800} color="#34D399" sx={{ lineHeight: 1.2 }}>
+                            <Typography variant="h6" fontWeight={800} color="#34D399" sx={{ lineHeight: 1.2, fontSize: "1.15rem" }}>
                               {(grade.summary.closingWeight || 0).toLocaleString()}
-                              <Typography component="span" variant="body2" fontWeight={700} ml={0.5} sx={{ color: "#A7F3D0" }}>
+                              <Typography component="span" variant="caption" fontWeight={700} ml={0.3} sx={{ color: "#A7F3D0" }}>
                                 Kg
                               </Typography>
                             </Typography>
-                            <Typography variant="body2" sx={{ color: "#FFFFFF" }} fontWeight={700}>
+                            <Typography variant="caption" sx={{ color: "#FFFFFF" }} fontWeight={700} display="block">
                               {(grade.summary.closingBags || 0).toLocaleString()} Total Bags Remaining
                             </Typography>
                           </Box>
