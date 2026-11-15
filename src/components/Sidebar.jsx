@@ -67,18 +67,19 @@ export default function Sidebar() {
 
   const itemSx = (active) => ({
     mx: 1.5,
-    my: 0.3,
+    my: 0.4,
     px: 2,
+    py: 1,
     borderRadius: "10px",
-    color: active ? "#fff" : "rgba(255,255,255,0.75)",
-    bgcolor: active ? "rgba(255,255,255,0.12)" : "transparent",
+    color: active ? "#FFFFFF !important" : "rgba(255,255,255,0.85) !important",
+    bgcolor: active ? "#2563EB !important" : "transparent",
     "&:hover": {
-      bgcolor: "rgba(255,255,255,0.08)",
+      bgcolor: active ? "#1D4ED8 !important" : "rgba(255,255,255,0.08) !important",
     },
   });
 
   const iconSx = (active) => ({
-    color: active ? "#fff" : "rgba(255,255,255,0.75)",
+    color: active ? "#FFFFFF !important" : "rgba(255,255,255,0.85) !important",
     minWidth: 36,
   });
 
@@ -109,7 +110,8 @@ export default function Sidebar() {
                 primary={label}
                 primaryTypographyProps={{
                   fontSize: 14,
-                  fontWeight: active ? 600 : 500,
+                  fontWeight: active ? 700 : 500,
+                  color: "inherit",
                 }}
               />
             </ListItemButton>
@@ -125,14 +127,25 @@ export default function Sidebar() {
             if (onItemClick) onItemClick();
             handleLogout();
           }}
-          sx={itemSx(false)}
+          sx={{
+            mx: 1.5,
+            my: 0.4,
+            px: 2,
+            py: 1,
+            borderRadius: "10px",
+            color: "#F87171 !important",
+            bgcolor: "rgba(239,68,68,0.1) !important",
+            "&:hover": {
+              bgcolor: "rgba(239,68,68,0.2) !important",
+            },
+          }}
         >
-          <ListItemIcon sx={iconSx(false)}>
+          <ListItemIcon sx={{ color: "#F87171 !important", minWidth: 36 }}>
             <Logout fontSize="small" sx={{ color: "inherit" }} />
           </ListItemIcon>
           <ListItemText
             primary="Logout"
-            primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            primaryTypographyProps={{ fontSize: 14, fontWeight: 600, color: "inherit" }}
           />
         </ListItemButton>
       </List>
@@ -224,46 +237,74 @@ export default function Sidebar() {
           open={mobileOpen}
           onClose={() => setMobileOpen(false)}
           ModalProps={{ keepMounted: true }}
-          PaperProps={{
-            sx: {
-              width: 270,
-              bgcolor: "#0F172A",
-              color: "#fff",
-              display: "flex",
-              flexDirection: "column",
+          sx={{
+            display: { xs: "block", md: "none" },
+            zIndex: 1400,
+            "& .MuiDrawer-paper": {
+              width: 280,
+              bgcolor: "#0F172A !important",
+              color: "#FFFFFF !important",
               boxSizing: "border-box",
+              backgroundImage: "none !important",
+              borderRight: "1px solid rgba(255,255,255,0.12)",
+            },
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                width: 280,
+                bgcolor: "#0F172A !important",
+                color: "#FFFFFF !important",
+                boxSizing: "border-box",
+                backgroundImage: "none !important",
+                borderRight: "1px solid rgba(255,255,255,0.12)",
+              },
             },
           }}
         >
           <Box
             sx={{
-              p: 2,
+              width: "100%",
+              height: "100%",
+              bgcolor: "#0F172A",
+              color: "#FFFFFF",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              flexDirection: "column",
             }}
           >
-            <Typography
+            <Box
               sx={{
-                fontSize: 20,
-                fontWeight: 800,
-                letterSpacing: "0.5px",
-                color: "#fff",
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              UMS
-            </Typography>
-            <IconButton
-              onClick={() => setMobileOpen(false)}
-              sx={{ color: "rgba(255,255,255,0.7)" }}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+              <Typography
+                sx={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  letterSpacing: "0.5px",
+                  color: "#FFFFFF",
+                }}
+              >
+                UMS
+              </Typography>
+              <IconButton
+                onClick={() => setMobileOpen(false)}
+                sx={{
+                  color: "rgba(255,255,255,0.7)",
+                  "&:hover": { color: "#FFFFFF" },
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+
+            <Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
+
+            {renderNavList(() => setMobileOpen(false))}
           </Box>
-
-          <Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
-
-          {renderNavList(() => setMobileOpen(false))}
         </Drawer>
       </Box>
 
