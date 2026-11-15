@@ -706,29 +706,34 @@ export default function MonthlyReportPage() {
                 2. DEDICATED VARIETY SUMMARY SECTION (VARIETY A & VARIETY B)
             ========================================================= */}
             <Box sx={{ mt: 6, mb: 3 }}>
-              <Typography variant="h5" fontWeight={700}>
-                Variety Movement & Stock Counts (Variety A & Variety B)
-              </Typography>
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <AccountBalanceIcon sx={{ color: "#111827", fontSize: 28 }} />
+                <Typography variant="h5" fontWeight={700}>
+                  Variety Movement & Stock Counts (Variety A & Variety B)
+                </Typography>
+              </Stack>
               <Typography color="text.secondary" mt={0.5}>
-                Specific counts, weights, inward received, and outward issued grouped by variety.
+                Easily monitor inward/outward transaction counts, gunny bag quantities, and net weights grouped by variety.
               </Typography>
             </Box>
 
-            <Grid container spacing={3}>
+            {/* Variety Cards (Side-by-side with prominent Bag Counts and Transaction Badges) */}
+            <Grid container spacing={3} sx={{ mb: 3 }}>
               {(report.varietySummary || []).map((vs) => (
-                <Grid size={{ xs: 12, md: 6 }} key={vs.variety}>
+                <Grid size={{ xs: 12, lg: 6 }} key={vs.variety}>
                   <Card
                     sx={{
                       borderRadius: "20px",
                       border:
                         vs.variety === "A"
-                          ? "1.5px solid #93C5FD"
-                          : "1.5px solid #DDD6FE",
+                          ? "2px solid #93C5FD"
+                          : "2px solid #DDD6FE",
                       bgcolor: "#FFFFFF",
                       boxShadow: "0px 8px 24px rgba(0,0,0,0.04)",
                       overflow: "hidden",
                     }}
                   >
+                    {/* Header */}
                     <Box
                       sx={{
                         p: 2.5,
@@ -737,16 +742,19 @@ export default function MonthlyReportPage() {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1.5,
                       }}
                     >
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <Chip
                           label={`Variety ${vs.variety}`}
                           sx={{
-                            fontWeight: 700,
-                            fontSize: "0.85rem",
+                            fontWeight: 800,
+                            fontSize: "0.9rem",
                             bgcolor: vs.variety === "A" ? "#2563EB" : "#7C3AED",
                             color: "#FFFFFF",
+                            px: 0.5,
                           }}
                         />
                         <Typography variant="subtitle1" fontWeight={700} color="#111827">
@@ -755,211 +763,310 @@ export default function MonthlyReportPage() {
                             : "Common Variety B"}
                         </Typography>
                       </Stack>
-                      <Chip
-                        label={`Closing: ${vs.closingWeight} Kg | ${vs.closingBags} Bags`}
-                        sx={{
-                          fontWeight: 700,
-                          bgcolor: "#111827",
-                          color: "#FFFFFF",
-                        }}
-                      />
+
+                      {/* Header Count Badges */}
+                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                        <Chip
+                          label={`Inward: ${vs.inwardCount || 0} Load${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
+                          size="small"
+                          sx={{
+                            fontWeight: 700,
+                            bgcolor: "#DCFCE7",
+                            color: "#166534",
+                            border: "1px solid #86EFAC",
+                          }}
+                        />
+                        <Chip
+                          label={`Outward: ${vs.outwardCount || 0} Issue${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
+                          size="small"
+                          sx={{
+                            fontWeight: 700,
+                            bgcolor: "#DBEAFE",
+                            color: "#1E40AF",
+                            border: "1px solid #93C5FD",
+                          }}
+                        />
+                        <Chip
+                          label={`Closing: ${vs.closingBags} Bags`}
+                          size="small"
+                          sx={{
+                            fontWeight: 800,
+                            bgcolor: "#111827",
+                            color: "#34D399",
+                            border: "1px solid #374151",
+                          }}
+                        />
+                      </Stack>
                     </Box>
 
+                    {/* Card Body - 4 Blocks with Large, Prominent Bag & Entry Counts */}
                     <CardContent sx={{ p: 2.5 }}>
                       <Grid container spacing={2}>
-                        {/* Opening Stock */}
+                        {/* 1. Opening Stock */}
                         <Grid size={{ xs: 6, sm: 3 }}>
                           <Box
                             sx={{
-                              p: 1.5,
-                              borderRadius: "12px",
+                              p: 2,
+                              borderRadius: "14px",
                               bgcolor: "#F9FAFB",
-                              border: "1px solid #F3F4F6",
+                              border: "1.5px solid #E5E7EB",
                               textAlign: "center",
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
                             }}
                           >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={700}
-                            >
-                              OPENING
-                            </Typography>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              color="#111827"
-                              mt={0.5}
-                            >
-                              {vs.openingWeight}{" "}
-                              <Typography component="span" variant="caption">
-                                Kg
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={800}
+                                letterSpacing="0.5px"
+                              >
+                                OPENING
                               </Typography>
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              display="block"
-                            >
-                              {vs.openingBags} Bags
+                              <Chip
+                                label="Stock"
+                                size="small"
+                                sx={{
+                                  height: 18,
+                                  fontSize: "0.68rem",
+                                  bgcolor: "#F3F4F6",
+                                  color: "#4B5563",
+                                  fontWeight: 700,
+                                }}
+                              />
+                            </Box>
+
+                            <Box sx={{ my: 0.5 }}>
+                              <Typography
+                                variant="h5"
+                                fontWeight={800}
+                                color="#111827"
+                                sx={{ lineHeight: 1.2 }}
+                              >
+                                {vs.openingBags}
+                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#4B5563" }}>
+                                  Bags
+                                </Typography>
+                              </Typography>
+
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                fontWeight={600}
+                                mt={0.5}
+                              >
+                                {vs.openingWeight} Kg
+                              </Typography>
+                            </Box>
+
+                            <Typography variant="caption" sx={{ color: "#9CA3AF", fontSize: "0.7rem", fontWeight: 600 }}>
+                              Opening Balance
                             </Typography>
                           </Box>
                         </Grid>
 
-                        {/* Inward Stock */}
+                        {/* 2. Inward Stock */}
                         <Grid size={{ xs: 6, sm: 3 }}>
                           <Box
                             sx={{
-                              p: 1.5,
-                              borderRadius: "12px",
+                              p: 2,
+                              borderRadius: "14px",
                               bgcolor: "#F0FDF4",
-                              border: "1px solid #DCFCE7",
+                              border: "1.5px solid #BBF7D0",
                               textAlign: "center",
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
                             }}
                           >
-                            <Stack
-                              direction="row"
-                              justifyContent="center"
-                              spacing={0.5}
-                              alignItems="center"
-                            >
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                               <Typography
                                 variant="caption"
                                 color="#166534"
-                                fontWeight={700}
+                                fontWeight={800}
+                                letterSpacing="0.5px"
                               >
                                 INWARD
                               </Typography>
                               <Chip
-                                label={`${vs.inwardCount || 0}`}
+                                label={`${vs.inwardCount || 0} Load${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
                                 size="small"
                                 sx={{
-                                  height: 16,
-                                  fontSize: "0.65rem",
+                                  height: 18,
+                                  fontSize: "0.68rem",
                                   bgcolor: "#DCFCE7",
                                   color: "#166534",
-                                  fontWeight: 700,
+                                  fontWeight: 800,
+                                  border: "1px solid #86EFAC",
                                 }}
                               />
-                            </Stack>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              color="#166534"
-                              mt={0.5}
-                            >
-                              +{vs.inwardWeight}{" "}
-                              <Typography component="span" variant="caption">
-                                Kg
+                            </Box>
+
+                            <Box sx={{ my: 0.5 }}>
+                              <Typography
+                                variant="h5"
+                                fontWeight={800}
+                                color="#166534"
+                                sx={{ lineHeight: 1.2 }}
+                              >
+                                +{vs.inwardBags}
+                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#166534" }}>
+                                  Bags
+                                </Typography>
                               </Typography>
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="#166534"
-                              display="block"
-                            >
-                              {vs.inwardBags} Bags
+
+                              <Typography
+                                variant="body2"
+                                color="#15803D"
+                                fontWeight={700}
+                                mt={0.5}
+                              >
+                                +{vs.inwardWeight} Kg
+                              </Typography>
+                            </Box>
+
+                            <Typography variant="caption" sx={{ color: "#16A34A", fontSize: "0.7rem", fontWeight: 700 }}>
+                              Total Received
                             </Typography>
                           </Box>
                         </Grid>
 
-                        {/* Outward Stock */}
+                        {/* 3. Outward Stock */}
                         <Grid size={{ xs: 6, sm: 3 }}>
                           <Box
                             sx={{
-                              p: 1.5,
-                              borderRadius: "12px",
+                              p: 2,
+                              borderRadius: "14px",
                               bgcolor: "#EFF6FF",
-                              border: "1px solid #DBEAFE",
+                              border: "1.5px solid #BFDBFE",
                               textAlign: "center",
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
                             }}
                           >
-                            <Stack
-                              direction="row"
-                              justifyContent="center"
-                              spacing={0.5}
-                              alignItems="center"
-                            >
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                               <Typography
                                 variant="caption"
                                 color="#1E40AF"
-                                fontWeight={700}
+                                fontWeight={800}
+                                letterSpacing="0.5px"
                               >
                                 OUTWARD
                               </Typography>
                               <Chip
-                                label={`${vs.outwardCount || 0}`}
+                                label={`${vs.outwardCount || 0} Issue${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
                                 size="small"
                                 sx={{
-                                  height: 16,
-                                  fontSize: "0.65rem",
+                                  height: 18,
+                                  fontSize: "0.68rem",
                                   bgcolor: "#DBEAFE",
                                   color: "#1E40AF",
-                                  fontWeight: 700,
+                                  fontWeight: 800,
+                                  border: "1px solid #93C5FD",
                                 }}
                               />
-                            </Stack>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              color="#1E40AF"
-                              mt={0.5}
-                            >
-                              -{vs.outwardWeight}{" "}
-                              <Typography component="span" variant="caption">
-                                Kg
+                            </Box>
+
+                            <Box sx={{ my: 0.5 }}>
+                              <Typography
+                                variant="h5"
+                                fontWeight={800}
+                                color="#1E40AF"
+                                sx={{ lineHeight: 1.2 }}
+                              >
+                                -{vs.outwardBags}
+                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#1E40AF" }}>
+                                  Bags
+                                </Typography>
                               </Typography>
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="#1E40AF"
-                              display="block"
-                            >
-                              {vs.outwardBags} Bags
+
+                              <Typography
+                                variant="body2"
+                                color="#1D4ED8"
+                                fontWeight={700}
+                                mt={0.5}
+                              >
+                                -{vs.outwardWeight} Kg
+                              </Typography>
+                            </Box>
+
+                            <Typography variant="caption" sx={{ color: "#2563EB", fontSize: "0.7rem", fontWeight: 700 }}>
+                              Total Dispatched
                             </Typography>
                           </Box>
                         </Grid>
 
-                        {/* Closing Balance */}
+                        {/* 4. Closing Balance */}
                         <Grid size={{ xs: 6, sm: 3 }}>
                           <Box
                             sx={{
-                              p: 1.5,
-                              borderRadius: "12px",
+                              p: 2,
+                              borderRadius: "14px",
                               bgcolor: "#111827",
+                              border: "1.5px solid #1F2937",
                               color: "#FFFFFF",
                               textAlign: "center",
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              boxShadow: "0px 4px 14px rgba(0,0,0,0.15)",
                             }}
                           >
-                            <Typography
-                              variant="caption"
-                              sx={{ color: "#9CA3AF" }}
-                              fontWeight={700}
-                            >
-                              CLOSING
-                            </Typography>
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={700}
-                              color="#FFFFFF"
-                              mt={0.5}
-                            >
-                              {vs.closingWeight}{" "}
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                               <Typography
-                                component="span"
                                 variant="caption"
                                 sx={{ color: "#9CA3AF" }}
+                                fontWeight={800}
+                                letterSpacing="0.5px"
                               >
-                                Kg
+                                CLOSING
                               </Typography>
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{ color: "#10B981" }}
-                              fontWeight={600}
-                              display="block"
-                            >
-                              {vs.closingBags} Bags
+                              <Chip
+                                label="Net Stock"
+                                size="small"
+                                sx={{
+                                  height: 18,
+                                  fontSize: "0.68rem",
+                                  bgcolor: "#1F2937",
+                                  color: "#34D399",
+                                  fontWeight: 800,
+                                  border: "1px solid #374151",
+                                }}
+                              />
+                            </Box>
+
+                            <Box sx={{ my: 0.5 }}>
+                              <Typography
+                                variant="h5"
+                                fontWeight={800}
+                                color="#34D399"
+                                sx={{ lineHeight: 1.2 }}
+                              >
+                                {vs.closingBags}
+                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#A7F3D0" }}>
+                                  Bags
+                                </Typography>
+                              </Typography>
+
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "#FFFFFF" }}
+                                fontWeight={700}
+                                mt={0.5}
+                              >
+                                {vs.closingWeight} Kg
+                              </Typography>
+                            </Box>
+
+                            <Typography variant="caption" sx={{ color: "#9CA3AF", fontSize: "0.7rem", fontWeight: 600 }}>
+                              Available Stock
                             </Typography>
                           </Box>
                         </Grid>
@@ -969,6 +1076,169 @@ export default function MonthlyReportPage() {
                 </Grid>
               ))}
             </Grid>
+
+            {/* Quick Variety Comparison Table for Instant At-a-Glance Count Review */}
+            <Paper
+              sx={{
+                mb: 4,
+                borderRadius: "18px",
+                border: "1px solid #E5E7EB",
+                boxShadow: "0px 6px 20px rgba(0,0,0,0.03)",
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  px: 3,
+                  bgcolor: "#F8FAFC",
+                  borderBottom: "1px solid #E5E7EB",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="subtitle1" fontWeight={700} color="#111827">
+                  Variety Counts & Movements Table
+                </Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Comprehensive comparison of Variety A vs Variety B
+                </Typography>
+              </Box>
+
+              <TableContainer>
+                <Table size="small">
+                  <TableHead sx={{ bgcolor: "#F1F5F9" }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 700 }}>Variety</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 700, color: "#166534" }}>Inward Entries</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 700, color: "#166534" }}>Inward Bags</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700, color: "#166534" }}>Inward Weight (Kg)</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 700, color: "#1E40AF" }}>Outward Entries</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 700, color: "#1E40AF" }}>Outward Bags</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700, color: "#1E40AF" }}>Outward Weight (Kg)</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 700 }}>Opening Bags</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700 }}>Opening Wt (Kg)</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#34D399" }}>Closing Bags</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#FFFFFF" }}>Closing Wt (Kg)</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(report.varietySummary || []).map((vs) => (
+                      <TableRow key={vs.variety} hover sx={{ "&:hover": { bgcolor: "#F8FAFC" } }}>
+                        <TableCell sx={{ fontWeight: 700 }}>
+                          <Chip
+                            label={`Variety ${vs.variety}`}
+                            size="small"
+                            sx={{
+                              fontWeight: 700,
+                              bgcolor: vs.variety === "A" ? "#EFF6FF" : "#F5F3FF",
+                              color: vs.variety === "A" ? "#1D4ED8" : "#6D28D9",
+                              border: `1px solid ${vs.variety === "A" ? "#BFDBFE" : "#DDD6FE"}`,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            label={`${vs.inwardCount || 0} Inward${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontWeight: 700,
+                              bgcolor: (vs.inwardCount || 0) > 0 ? "#DCFCE7" : "#F3F4F6",
+                              color: (vs.inwardCount || 0) > 0 ? "#166534" : "#9CA3AF",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 700, color: "#166534", fontSize: "0.95rem" }}>
+                          +{(vs.inwardBags || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600, color: "#166534" }}>
+                          +{(vs.inwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            label={`${vs.outwardCount || 0} Outward${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontWeight: 700,
+                              bgcolor: (vs.outwardCount || 0) > 0 ? "#DBEAFE" : "#F3F4F6",
+                              color: (vs.outwardCount || 0) > 0 ? "#1E40AF" : "#9CA3AF",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 700, color: "#1E40AF", fontSize: "0.95rem" }}>
+                          -{(vs.outwardBags || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600, color: "#1E40AF" }}>
+                          -{(vs.outwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 600 }}>
+                          {(vs.openingBags || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 500 }}>
+                          {(vs.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#34D399", fontSize: "1rem" }}>
+                          {(vs.closingBags || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#FFFFFF", fontSize: "0.95rem" }}>
+                          {(vs.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                    {/* Total Row */}
+                    {report.varietySummary && report.varietySummary.length > 0 && (
+                      <TableRow sx={{ bgcolor: "#F8FAFC", borderTop: "2px solid #E2E8F0" }}>
+                        <TableCell sx={{ fontWeight: 800, color: "#111827" }}>
+                          TOTAL
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            label={`${report.varietySummary.reduce((sum, v) => sum + (v.inwardCount || 0), 0)} Total Inwards`}
+                            size="small"
+                            sx={{ fontWeight: 800, bgcolor: "#BBF7D0", color: "#14532D" }}
+                          />
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}>
+                          +{report.varietySummary.reduce((sum, v) => sum + (v.inwardBags || 0), 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 800, color: "#166534" }}>
+                          +{report.varietySummary.reduce((sum, v) => sum + (v.inwardWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            label={`${report.varietySummary.reduce((sum, v) => sum + (v.outwardCount || 0), 0)} Total Outwards`}
+                            size="small"
+                            sx={{ fontWeight: 800, bgcolor: "#BFDBFE", color: "#1E3A8A" }}
+                          />
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: "#1E40AF", fontSize: "1rem" }}>
+                          -{report.varietySummary.reduce((sum, v) => sum + (v.outwardBags || 0), 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 800, color: "#1E40AF" }}>
+                          -{report.varietySummary.reduce((sum, v) => sum + (v.outwardWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 800 }}>
+                          {report.varietySummary.reduce((sum, v) => sum + (v.openingBags || 0), 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 800 }}>
+                          {report.varietySummary.reduce((sum, v) => sum + (v.openingWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 900, bgcolor: "#0F172A", color: "#34D399", fontSize: "1.05rem" }}>
+                          {report.varietySummary.reduce((sum, v) => sum + (v.closingBags || 0), 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 900, bgcolor: "#0F172A", color: "#FFFFFF", fontSize: "1rem" }}>
+                          {report.varietySummary.reduce((sum, v) => sum + (v.closingWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
 
             {/* ========================================================
                 2. DEDICATED GUNNY BAGS INVENTORY & COUNTS SECTION
