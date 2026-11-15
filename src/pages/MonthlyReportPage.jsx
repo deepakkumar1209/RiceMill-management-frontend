@@ -181,6 +181,83 @@ export default function MonthlyReportPage() {
     return Array.from(new Set(report.breakdown.map((b) => b.item)));
   }, [report]);
 
+  // Group breakdown by Variety (Grade A and Common B) with Raw Paddy and Boiled Rice separated
+  const varietyItemDetails = useMemo(() => {
+    if (!report?.breakdown) return [];
+
+    const varieties = [
+      { key: "A", label: "Grade A", fullLabel: "Grade A / Fine Quality", color: "#2563EB", bg: "#EFF6FF", border: "#BFDBFE" },
+      { key: "B", label: "Common B", fullLabel: "Common B / Standard", color: "#7C3AED", bg: "#F5F3FF", border: "#DDD6FE" },
+    ];
+
+    return varieties.map((vr) => {
+      const summary = report.varietySummary?.find((v) => v.variety === vr.key) || {
+        openingWeight: 0,
+        openingBags: 0,
+        inwardWeight: 0,
+        inwardBags: 0,
+        inwardCount: 0,
+        outwardWeight: 0,
+        outwardBags: 0,
+        outwardCount: 0,
+        closingWeight: 0,
+        closingBags: 0,
+      };
+
+      const paddy = report.breakdown.find(
+        (b) => b.variety === vr.key && b.item?.toUpperCase().includes("PADDY")
+      ) || {
+        item: "RAW PADDY",
+        variety: vr.key,
+        openingWeight: 0,
+        openingBags: 0,
+        inwardWeight: 0,
+        inwardBags: 0,
+        inwardCount: 0,
+        outwardWeight: 0,
+        outwardBags: 0,
+        outwardCount: 0,
+        closingWeight: 0,
+        closingBags: 0,
+        nbg: 0,
+        onb: 0,
+        ssg: 0,
+        swp: 0,
+        usb: 0,
+      };
+
+      const rice = report.breakdown.find(
+        (b) => b.variety === vr.key && b.item?.toUpperCase().includes("RICE")
+      ) || {
+        item: "BOILED RICE",
+        variety: vr.key,
+        openingWeight: 0,
+        openingBags: 0,
+        inwardWeight: 0,
+        inwardBags: 0,
+        inwardCount: 0,
+        outwardWeight: 0,
+        outwardBags: 0,
+        outwardCount: 0,
+        closingWeight: 0,
+        closingBags: 0,
+        paddyEquivalent: 0,
+        nbg: 0,
+        onb: 0,
+        ssg: 0,
+        swp: 0,
+        usb: 0,
+      };
+
+      return {
+        ...vr,
+        summary,
+        paddy,
+        rice,
+      };
+    });
+  }, [report]);
+
   // Count tallies for filter buttons
   const inwardTxCount = useMemo(() => {
     return (
@@ -279,19 +356,48 @@ export default function MonthlyReportPage() {
       ],
     ];
 
-    (report.varietySummary || []).forEach((v) => {
+    varietyItemDetails.forEach((grade) => {
+      // Raw Paddy
       varietySheetData.push([
-        v.variety === "A" ? "Grade A" : v.variety === "B" ? "Common B" : `Variety ${v.variety}`,
-        v.openingWeight,
-        v.openingBags,
-        v.inwardWeight,
-        v.inwardBags,
-        v.inwardCount,
-        v.outwardWeight,
-        v.outwardBags,
-        v.outwardCount,
-        v.closingWeight,
-        v.closingBags,
+        `${grade.label} - RAW PADDY`,
+        grade.paddy.openingWeight,
+        grade.paddy.openingBags,
+        grade.paddy.inwardWeight,
+        grade.paddy.inwardBags,
+        grade.paddy.inwardCount,
+        grade.paddy.outwardWeight,
+        grade.paddy.outwardBags,
+        grade.paddy.outwardCount,
+        grade.paddy.closingWeight,
+        grade.paddy.closingBags,
+      ]);
+      // Boiled Rice
+      varietySheetData.push([
+        `${grade.label} - BOILED RICE`,
+        grade.rice.openingWeight,
+        grade.rice.openingBags,
+        grade.rice.inwardWeight,
+        grade.rice.inwardBags,
+        grade.rice.inwardCount,
+        grade.rice.outwardWeight,
+        grade.rice.outwardBags,
+        grade.rice.outwardCount,
+        grade.rice.closingWeight,
+        grade.rice.closingBags,
+      ]);
+      // Grade Total
+      varietySheetData.push([
+        `${grade.label} (Net Balance)`,
+        grade.summary.openingWeight,
+        grade.summary.openingBags,
+        grade.summary.inwardWeight,
+        grade.summary.inwardBags,
+        grade.summary.inwardCount,
+        grade.summary.outwardWeight,
+        grade.summary.outwardBags,
+        grade.summary.outwardCount,
+        grade.summary.closingWeight,
+        grade.summary.closingBags,
       ]);
     });
 
@@ -724,27 +830,25 @@ export default function MonthlyReportPage() {
               </Typography>
             </Box>
 
-            {/* Variety Cards (Side-by-side with prominent Bag Counts and Transaction Badges) */}
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              {(report.varietySummary || []).map((vs) => (
-                <Grid size={{ xs: 12, lg: 6 }} key={vs.variety}>
+            {/* Variety Cards (Side-by-side with separate RAW PADDY and BOILED RICE counts) */}
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              {varietyItemDetails.map((grade) => (
+                <Grid size={{ xs: 12, xl: 6 }} key={grade.key}>
                   <Card
                     sx={{
-                      borderRadius: "20px",
-                      border:
-                        vs.variety === "A"
-                          ? "2px solid #93C5FD"
-                          : "2px solid #DDD6FE",
+                      borderRadius: "22px",
+                      border: `2px solid ${grade.border}`,
                       bgcolor: "#FFFFFF",
-                      boxShadow: "0px 8px 24px rgba(0,0,0,0.04)",
+                      boxShadow: "0px 8px 26px rgba(0,0,0,0.04)",
                       overflow: "hidden",
                     }}
                   >
-                    {/* Header */}
+                    {/* Grade Header */}
                     <Box
                       sx={{
                         p: 2.5,
-                        bgcolor: vs.variety === "A" ? "#EFF6FF" : "#F5F3FF",
+                        px: 3,
+                        bgcolor: grade.bg,
                         borderBottom: "1px solid #E5E7EB",
                         display: "flex",
                         justifyContent: "space-between",
@@ -755,26 +859,24 @@ export default function MonthlyReportPage() {
                     >
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <Chip
-                          label={vs.variety === "A" ? "Grade A" : vs.variety === "B" ? "Common B" : `Variety ${vs.variety}`}
+                          label={grade.label}
                           sx={{
                             fontWeight: 800,
-                            fontSize: "0.9rem",
-                            bgcolor: vs.variety === "A" ? "#2563EB" : "#7C3AED",
+                            fontSize: "0.95rem",
+                            bgcolor: grade.color,
                             color: "#FFFFFF",
                             px: 0.5,
                           }}
                         />
-                        <Typography variant="subtitle1" fontWeight={700} color="#111827">
-                          {vs.variety === "A"
-                            ? "Grade A / Fine Quality"
-                            : "Common B / Standard"}
+                        <Typography variant="subtitle1" fontWeight={800} color="#111827">
+                          {grade.fullLabel}
                         </Typography>
                       </Stack>
 
-                      {/* Header Count Badges */}
+                      {/* Header Badges */}
                       <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                         <Chip
-                          label={`Inward: ${vs.inwardCount || 0} Load${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
+                          label={`Inward: ${grade.summary.inwardCount || 0} Load${(grade.summary.inwardCount || 0) === 1 ? "" : "s"}`}
                           size="small"
                           sx={{
                             fontWeight: 700,
@@ -784,7 +886,7 @@ export default function MonthlyReportPage() {
                           }}
                         />
                         <Chip
-                          label={`Outward: ${vs.outwardCount || 0} Issue${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
+                          label={`Outward: ${grade.summary.outwardCount || 0} Issue${(grade.summary.outwardCount || 0) === 1 ? "" : "s"}`}
                           size="small"
                           sx={{
                             fontWeight: 700,
@@ -794,7 +896,7 @@ export default function MonthlyReportPage() {
                           }}
                         />
                         <Chip
-                          label={`Closing: ${(vs.closingWeight || 0).toLocaleString()} Kg · ${(vs.closingBags || 0).toLocaleString()} Bags`}
+                          label={`Closing: ${(grade.summary.closingWeight || 0).toLocaleString()} Kg · ${(grade.summary.closingBags || 0).toLocaleString()} Bags`}
                           size="small"
                           sx={{
                             fontWeight: 800,
@@ -806,278 +908,295 @@ export default function MonthlyReportPage() {
                       </Stack>
                     </Box>
 
-                    {/* Card Body - 4 Blocks with Large, Prominent Bag & Entry Counts */}
-                    <CardContent sx={{ p: 2.5 }}>
-                      <Grid container spacing={2}>
-                        {/* 1. Opening Stock */}
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                          <Box
-                            sx={{
-                              p: 2,
-                              borderRadius: "14px",
-                              bgcolor: "#F9FAFB",
-                              border: "1.5px solid #E5E7EB",
-                              textAlign: "center",
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={800}
-                                letterSpacing="0.5px"
-                              >
-                                OPENING
-                              </Typography>
+                    {/* Card Content: Itemized RAW PADDY & BOILED RICE */}
+                    <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                      <Stack spacing={2.5}>
+                        {/* 1. SEPARATE ITEM: RAW PADDY */}
+                        <Box
+                          sx={{
+                            borderRadius: "16px",
+                            border: "1.5px solid #86EFAC",
+                            bgcolor: "#F0FDF4",
+                            p: 2.2,
+                          }}
+                        >
+                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
+                            <Stack direction="row" spacing={1.2} alignItems="center">
                               <Chip
-                                label="Stock"
+                                label="RAW PADDY"
                                 size="small"
                                 sx={{
-                                  height: 18,
-                                  fontSize: "0.68rem",
-                                  bgcolor: "#F3F4F6",
-                                  color: "#4B5563",
-                                  fontWeight: 700,
-                                }}
-                              />
-                            </Box>
-
-                            <Box sx={{ my: 0.5 }}>
-                              <Typography
-                                variant="h5"
-                                fontWeight={800}
-                                color="#111827"
-                                sx={{ lineHeight: 1.2 }}
-                              >
-                                {(vs.openingWeight || 0).toLocaleString()}
-                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#4B5563" }}>
-                                  Kg
-                                </Typography>
-                              </Typography>
-
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                fontWeight={700}
-                                mt={0.5}
-                              >
-                                {(vs.openingBags || 0).toLocaleString()} Bags
-                              </Typography>
-                            </Box>
-
-                            <Typography variant="caption" sx={{ color: "#9CA3AF", fontSize: "0.7rem", fontWeight: 600 }}>
-                              Opening Balance
-                            </Typography>
-                          </Box>
-                        </Grid>
-
-                        {/* 2. Inward Stock */}
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                          <Box
-                            sx={{
-                              p: 2,
-                              borderRadius: "14px",
-                              bgcolor: "#F0FDF4",
-                              border: "1.5px solid #BBF7D0",
-                              textAlign: "center",
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                              <Typography
-                                variant="caption"
-                                color="#166534"
-                                fontWeight={800}
-                                letterSpacing="0.5px"
-                              >
-                                INWARD
-                              </Typography>
-                              <Chip
-                                label={`${vs.inwardCount || 0} Load${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
-                                size="small"
-                                sx={{
-                                  height: 18,
-                                  fontSize: "0.68rem",
-                                  bgcolor: "#DCFCE7",
-                                  color: "#166534",
                                   fontWeight: 800,
-                                  border: "1px solid #86EFAC",
+                                  bgcolor: "#16A34A",
+                                  color: "#FFFFFF",
+                                  px: 0.5,
                                 }}
                               />
-                            </Box>
-
-                            <Box sx={{ my: 0.5 }}>
-                              <Typography
-                                variant="h5"
-                                fontWeight={800}
-                                color="#166534"
-                                sx={{ lineHeight: 1.2 }}
-                              >
-                                +{(vs.inwardWeight || 0).toLocaleString()}
-                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#166534" }}>
-                                  Kg
-                                </Typography>
+                              <Typography variant="body2" fontWeight={700} color="#166534">
+                                {grade.label} Paddy Stock
                               </Typography>
+                            </Stack>
 
-                              <Typography
-                                variant="body2"
-                                color="#15803D"
-                                fontWeight={700}
-                                mt={0.5}
-                              >
-                                +{(vs.inwardBags || 0).toLocaleString()} Bags
-                              </Typography>
-                            </Box>
-
-                            <Typography variant="caption" sx={{ color: "#16A34A", fontSize: "0.7rem", fontWeight: 700 }}>
-                              Total Received
-                            </Typography>
+                            <Chip
+                              label={`Paddy Stock: ${(grade.paddy.closingWeight || 0).toLocaleString()} Kg (${(grade.paddy.closingBags || 0).toLocaleString()} Bags)`}
+                              size="small"
+                              sx={{
+                                fontWeight: 700,
+                                bgcolor: "#DCFCE7",
+                                color: "#166534",
+                                border: "1px solid #86EFAC",
+                              }}
+                            />
                           </Box>
-                        </Grid>
 
-                        {/* 3. Outward Stock */}
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                          <Box
-                            sx={{
-                              p: 2,
-                              borderRadius: "14px",
-                              bgcolor: "#EFF6FF",
-                              border: "1.5px solid #BFDBFE",
-                              textAlign: "center",
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                              <Typography
-                                variant="caption"
-                                color="#1E40AF"
-                                fontWeight={800}
-                                letterSpacing="0.5px"
+                          <Grid container spacing={1.5}>
+                            {/* Inward */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#FFFFFF",
+                                  border: "1px solid #BBF7D0",
+                                  textAlign: "center",
+                                }}
                               >
-                                OUTWARD
-                              </Typography>
+                                <Typography variant="caption" color="#166534" fontWeight={800} letterSpacing="0.5px">
+                                  INWARD RECEIVED
+                                </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#166534" mt={0.3}>
+                                  +{(grade.paddy.inwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#15803D" fontWeight={700} display="block">
+                                  +{(grade.paddy.inwardBags || 0).toLocaleString()} Bags · {grade.paddy.inwardCount || 0} Load
+                                </Typography>
+                              </Box>
+                            </Grid>
+
+                            {/* Outward */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#FFFFFF",
+                                  border: "1px solid #E5E7EB",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.5px">
+                                  OUTWARD ISSUED
+                                </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#4B5563" mt={0.3}>
+                                  -{(grade.paddy.outwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#6B7280" fontWeight={700} display="block">
+                                  -{(grade.paddy.outwardBags || 0).toLocaleString()} Bags · {grade.paddy.outwardCount || 0} Issue
+                                </Typography>
+                              </Box>
+                            </Grid>
+
+                            {/* Closing Balance */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#14532D",
+                                  color: "#FFFFFF",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={800} letterSpacing="0.5px">
+                                  PADDY BALANCE
+                                </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#FFFFFF" mt={0.3}>
+                                  {(grade.paddy.closingWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5} sx={{ color: "#BBF7D0" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: "#86EFAC" }} fontWeight={700} display="block">
+                                  {(grade.paddy.closingBags || 0).toLocaleString()} Bags Available
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          </Grid>
+
+                          {/* Paddy Bags row */}
+                          <Stack direction="row" spacing={1} alignItems="center" mt={1.5} flexWrap="wrap">
+                            <Typography variant="caption" fontWeight={700} color="#166534">
+                              Paddy Gunny Bags:
+                            </Typography>
+                            <Chip label={`NBG: ${grade.paddy.nbg || 0}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0" }} />
+                            <Chip label={`ONBG: ${grade.paddy.onb || 0}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0" }} />
+                            <Chip label={`SSG: ${grade.paddy.ssg || 0}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0" }} />
+                            <Chip label={`SWP: ${grade.paddy.swp || 0}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0" }} />
+                            <Chip label={`USB: ${grade.paddy.usb || 0}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#166534", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BBF7D0" }} />
+                          </Stack>
+                        </Box>
+
+                        {/* 2. SEPARATE ITEM: BOILED RICE */}
+                        <Box
+                          sx={{
+                            borderRadius: "16px",
+                            border: "1.5px solid #93C5FD",
+                            bgcolor: "#EFF6FF",
+                            p: 2.2,
+                          }}
+                        >
+                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
+                            <Stack direction="row" spacing={1.2} alignItems="center">
                               <Chip
-                                label={`${vs.outwardCount || 0} Issue${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
+                                label="BOILED RICE"
                                 size="small"
                                 sx={{
-                                  height: 18,
-                                  fontSize: "0.68rem",
-                                  bgcolor: "#DBEAFE",
-                                  color: "#1E40AF",
                                   fontWeight: 800,
-                                  border: "1px solid #93C5FD",
+                                  bgcolor: "#2563EB",
+                                  color: "#FFFFFF",
+                                  px: 0.5,
                                 }}
                               />
-                            </Box>
-
-                            <Box sx={{ my: 0.5 }}>
-                              <Typography
-                                variant="h5"
-                                fontWeight={800}
-                                color="#1E40AF"
-                                sx={{ lineHeight: 1.2 }}
-                              >
-                                -{(vs.outwardWeight || 0).toLocaleString()}
-                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#1E40AF" }}>
-                                  Kg
-                                </Typography>
+                              <Typography variant="body2" fontWeight={700} color="#1E40AF">
+                                {grade.label} Milled Rice (Outturn: 68%)
                               </Typography>
+                            </Stack>
 
-                              <Typography
-                                variant="body2"
-                                color="#1D4ED8"
-                                fontWeight={700}
-                                mt={0.5}
-                              >
-                                -{(vs.outwardBags || 0).toLocaleString()} Bags
-                              </Typography>
-                            </Box>
-
-                            <Typography variant="caption" sx={{ color: "#2563EB", fontSize: "0.7rem", fontWeight: 700 }}>
-                              Total Dispatched
-                            </Typography>
+                            <Chip
+                              label={`Dispatched: ${(grade.rice.outwardWeight || 0).toLocaleString()} Kg (${(grade.rice.outwardBags || 0).toLocaleString()} Bags)`}
+                              size="small"
+                              sx={{
+                                fontWeight: 700,
+                                bgcolor: "#DBEAFE",
+                                color: "#1E40AF",
+                                border: "1px solid #93C5FD",
+                              }}
+                            />
                           </Box>
-                        </Grid>
 
-                        {/* 4. Closing Balance */}
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                          <Box
-                            sx={{
-                              p: 2,
-                              borderRadius: "14px",
-                              bgcolor: "#111827",
-                              border: "1.5px solid #1F2937",
-                              color: "#FFFFFF",
-                              textAlign: "center",
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              boxShadow: "0px 4px 14px rgba(0,0,0,0.15)",
-                            }}
-                          >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                              <Typography
-                                variant="caption"
-                                sx={{ color: "#9CA3AF" }}
-                                fontWeight={800}
-                                letterSpacing="0.5px"
-                              >
-                                CLOSING
-                              </Typography>
-                              <Chip
-                                label="Net Stock"
-                                size="small"
+                          <Grid container spacing={1.5}>
+                            {/* Inward */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
                                 sx={{
-                                  height: 18,
-                                  fontSize: "0.68rem",
-                                  bgcolor: "#1F2937",
-                                  color: "#34D399",
-                                  fontWeight: 800,
-                                  border: "1px solid #374151",
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#FFFFFF",
+                                  border: "1px solid #E5E7EB",
+                                  textAlign: "center",
                                 }}
-                              />
-                            </Box>
-
-                            <Box sx={{ my: 0.5 }}>
-                              <Typography
-                                variant="h5"
-                                fontWeight={800}
-                                color="#34D399"
-                                sx={{ lineHeight: 1.2 }}
                               >
-                                {(vs.closingWeight || 0).toLocaleString()}
-                                <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#A7F3D0" }}>
-                                  Kg
+                                <Typography variant="caption" color="text.secondary" fontWeight={800} letterSpacing="0.5px">
+                                  INWARD RECEIVED
                                 </Typography>
-                              </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#4B5563" mt={0.3}>
+                                  +{(grade.rice.inwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#6B7280" fontWeight={700} display="block">
+                                  +{(grade.rice.inwardBags || 0).toLocaleString()} Bags · {grade.rice.inwardCount || 0} Load
+                                </Typography>
+                              </Box>
+                            </Grid>
 
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "#FFFFFF" }}
-                                fontWeight={700}
-                                mt={0.5}
+                            {/* Actual Rice Outward */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#FFFFFF",
+                                  border: "1px solid #BFDBFE",
+                                  textAlign: "center",
+                                }}
                               >
-                                {(vs.closingBags || 0).toLocaleString()} Bags
-                              </Typography>
-                            </Box>
+                                <Typography variant="caption" color="#1E40AF" fontWeight={800} letterSpacing="0.5px">
+                                  ACTUAL RICE OUTWARD
+                                </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#1E40AF" mt={0.3}>
+                                  -{(grade.rice.outwardWeight || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" color="#1D4ED8" fontWeight={700} display="block">
+                                  -{(grade.rice.outwardBags || 0).toLocaleString()} Bags · {grade.rice.outwardCount || 0} Issues
+                                </Typography>
+                              </Box>
+                            </Grid>
 
-                            <Typography variant="caption" sx={{ color: "#9CA3AF", fontSize: "0.7rem", fontWeight: 600 }}>
-                              Available Stock
+                            {/* Paddy Deducted */}
+                            <Grid size={{ xs: 12, sm: 4 }}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: "12px",
+                                  bgcolor: "#1E3A8A",
+                                  color: "#FFFFFF",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={800} letterSpacing="0.5px">
+                                  PADDY DEDUCTED (68%)
+                                </Typography>
+                                <Typography variant="h6" fontWeight={800} color="#FFFFFF" mt={0.3}>
+                                  -{(grade.rice.paddyEquivalent || 0).toLocaleString()}
+                                  <Typography component="span" variant="caption" fontWeight={700} ml={0.5} sx={{ color: "#BFDBFE" }}>Kg</Typography>
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: "#93C5FD" }} fontWeight={700} display="block">
+                                  Milled Grain Equivalent
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          </Grid>
+
+                          {/* Rice Bags row */}
+                          <Stack direction="row" spacing={1} alignItems="center" mt={1.5} flexWrap="wrap">
+                            <Typography variant="caption" fontWeight={700} color="#1E40AF">
+                              Rice Gunny Bags Issued:
+                            </Typography>
+                            <Chip label={`SSG: ${Math.abs(grade.rice.ssg || 0)}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE" }} />
+                            <Chip label={`ONBG: ${Math.abs(grade.rice.onb || 0)}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE" }} />
+                            <Chip label={`SWP: ${Math.abs(grade.rice.swp || 0)}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE" }} />
+                            <Chip label={`USB: ${Math.abs(grade.rice.usb || 0)}`} size="small" sx={{ bgcolor: "#FFFFFF", color: "#1E40AF", fontWeight: 700, height: 20, fontSize: "0.72rem", border: "1px solid #BFDBFE" }} />
+                          </Stack>
+                        </Box>
+
+                        {/* 3. CONSOLIDATED GRADE NET STOCK FOOTER */}
+                        <Box
+                          sx={{
+                            borderRadius: "14px",
+                            bgcolor: "#111827",
+                            color: "#FFFFFF",
+                            p: 2,
+                            px: 2.5,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: 1.5,
+                          }}
+                        >
+                          <Box>
+                            <Typography variant="caption" sx={{ color: "#9CA3AF" }} fontWeight={700}>
+                              {grade.label} CONSOLIDATED NET BALANCE
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.85)" }} fontWeight={500} mt={0.2}>
+                              Inward: +{(grade.summary.inwardWeight || 0).toLocaleString()} Kg ({grade.summary.inwardBags || 0} Bags) · Outward: -{(grade.summary.outwardWeight || 0).toLocaleString()} Kg ({grade.summary.outwardBags || 0} Bags)
                             </Typography>
                           </Box>
-                        </Grid>
-                      </Grid>
+
+                          <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
+                            <Typography variant="h5" fontWeight={800} color="#34D399" sx={{ lineHeight: 1.2 }}>
+                              {(grade.summary.closingWeight || 0).toLocaleString()}
+                              <Typography component="span" variant="body2" fontWeight={700} ml={0.5} sx={{ color: "#A7F3D0" }}>
+                                Kg
+                              </Typography>
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#FFFFFF" }} fontWeight={700}>
+                              {(grade.summary.closingBags || 0).toLocaleString()} Total Bags Remaining
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Stack>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -1109,7 +1228,7 @@ export default function MonthlyReportPage() {
                   Counts & Movements Table (Grade A & Common B)
                 </Typography>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                  Comprehensive comparison of Grade A vs Common B
+                  Itemized comparison of RAW PADDY vs BOILED RICE across Grade A & Common B
                 </Typography>
               </Box>
 
@@ -1117,7 +1236,7 @@ export default function MonthlyReportPage() {
                 <Table size="small" sx={{ minWidth: 950 }}>
                   <TableHead sx={{ bgcolor: "#F1F5F9" }}>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 700 }}>Variety</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Item & Variety</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700, color: "#166534" }}>Inward Entries</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700, color: "#166534" }}>Inward Bags</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 700, color: "#166534" }}>Inward Weight (Kg)</TableCell>
@@ -1131,69 +1250,195 @@ export default function MonthlyReportPage() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(report.varietySummary || []).map((vs) => (
-                      <TableRow key={vs.variety} hover sx={{ "&:hover": { bgcolor: "#F8FAFC" } }}>
-                        <TableCell sx={{ fontWeight: 700 }}>
-                          <Chip
-                            label={vs.variety === "A" ? "Grade A" : vs.variety === "B" ? "Common B" : `Variety ${vs.variety}`}
-                            size="small"
-                            sx={{
-                              fontWeight: 700,
-                              bgcolor: vs.variety === "A" ? "#EFF6FF" : "#F5F3FF",
-                              color: vs.variety === "A" ? "#1D4ED8" : "#6D28D9",
-                              border: `1px solid ${vs.variety === "A" ? "#BFDBFE" : "#DDD6FE"}`,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip
-                            label={`${vs.inwardCount || 0} Inward${(vs.inwardCount || 0) === 1 ? "" : "s"}`}
-                            size="small"
-                            sx={{
-                              height: 22,
-                              fontWeight: 700,
-                              bgcolor: (vs.inwardCount || 0) > 0 ? "#DCFCE7" : "#F3F4F6",
-                              color: (vs.inwardCount || 0) > 0 ? "#166534" : "#9CA3AF",
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 700, color: "#166534", fontSize: "0.95rem" }}>
-                          +{(vs.inwardBags || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600, color: "#166534" }}>
-                          +{(vs.inwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip
-                            label={`${vs.outwardCount || 0} Outward${(vs.outwardCount || 0) === 1 ? "" : "s"}`}
-                            size="small"
-                            sx={{
-                              height: 22,
-                              fontWeight: 700,
-                              bgcolor: (vs.outwardCount || 0) > 0 ? "#DBEAFE" : "#F3F4F6",
-                              color: (vs.outwardCount || 0) > 0 ? "#1E40AF" : "#9CA3AF",
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 700, color: "#1E40AF", fontSize: "0.95rem" }}>
-                          -{(vs.outwardBags || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600, color: "#1E40AF" }}>
-                          -{(vs.outwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 600 }}>
-                          {(vs.openingBags || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 500 }}>
-                          {(vs.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}>
-                          {(vs.closingBags || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 800, color: "#111827", fontSize: "0.95rem" }}>
-                          {(vs.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </TableCell>
-                      </TableRow>
+                    {varietyItemDetails.map((grade) => (
+                      <React.Fragment key={grade.key}>
+                        {/* 1. Raw Paddy Row */}
+                        <TableRow hover sx={{ "&:hover": { bgcolor: "#F8FAFC" } }}>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Chip
+                                label={grade.label}
+                                size="small"
+                                sx={{
+                                  fontWeight: 700,
+                                  bgcolor: grade.key === "A" ? "#EFF6FF" : "#F5F3FF",
+                                  color: grade.key === "A" ? "#1D4ED8" : "#6D28D9",
+                                  border: `1px solid ${grade.key === "A" ? "#BFDBFE" : "#DDD6FE"}`,
+                                  height: 20,
+                                  fontSize: "0.72rem",
+                                }}
+                              />
+                              <Typography variant="body2" fontWeight={700} color="#166534">
+                                RAW PADDY
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.paddy.inwardCount || 0} Inward${(grade.paddy.inwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{
+                                height: 22,
+                                fontWeight: 700,
+                                bgcolor: (grade.paddy.inwardCount || 0) > 0 ? "#DCFCE7" : "#F3F4F6",
+                                color: (grade.paddy.inwardCount || 0) > 0 ? "#166534" : "#9CA3AF",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700, color: "#166534", fontSize: "0.95rem" }}>
+                            +{(grade.paddy.inwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600, color: "#166534" }}>
+                            +{(grade.paddy.inwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.paddy.outwardCount || 0} Outward${(grade.paddy.outwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{
+                                height: 22,
+                                fontWeight: 700,
+                                bgcolor: (grade.paddy.outwardCount || 0) > 0 ? "#DBEAFE" : "#F3F4F6",
+                                color: (grade.paddy.outwardCount || 0) > 0 ? "#1E40AF" : "#9CA3AF",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700, color: "#4B5563", fontSize: "0.95rem" }}>
+                            -{(grade.paddy.outwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600, color: "#4B5563" }}>
+                            -{(grade.paddy.outwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 600 }}>
+                            {(grade.paddy.openingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 500 }}>
+                            {(grade.paddy.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}>
+                            {(grade.paddy.closingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800, color: "#111827", fontSize: "0.95rem" }}>
+                            {(grade.paddy.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                        </TableRow>
+
+                        {/* 2. Boiled Rice Row */}
+                        <TableRow hover sx={{ "&:hover": { bgcolor: "#F8FAFC" } }}>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Chip
+                                label={grade.label}
+                                size="small"
+                                sx={{
+                                  fontWeight: 700,
+                                  bgcolor: grade.key === "A" ? "#EFF6FF" : "#F5F3FF",
+                                  color: grade.key === "A" ? "#1D4ED8" : "#6D28D9",
+                                  border: `1px solid ${grade.key === "A" ? "#BFDBFE" : "#DDD6FE"}`,
+                                  height: 20,
+                                  fontSize: "0.72rem",
+                                }}
+                              />
+                              <Typography variant="body2" fontWeight={700} color="#1E40AF">
+                                BOILED RICE
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.rice.outwardCount || 0} Outward${(grade.rice.outwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{
+                                height: 22,
+                                fontWeight: 700,
+                                bgcolor: (grade.rice.inwardCount || 0) > 0 ? "#DCFCE7" : "#F3F4F6",
+                                color: (grade.rice.inwardCount || 0) > 0 ? "#166534" : "#9CA3AF",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700, color: "#166534", fontSize: "0.95rem" }}>
+                            +{(grade.rice.inwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600, color: "#166534" }}>
+                            +{(grade.rice.inwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.rice.outwardCount || 0} Outward${(grade.rice.outwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{
+                                height: 22,
+                                fontWeight: 700,
+                                bgcolor: (grade.rice.outwardCount || 0) > 0 ? "#DBEAFE" : "#F3F4F6",
+                                color: (grade.rice.outwardCount || 0) > 0 ? "#1E40AF" : "#9CA3AF",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700, color: "#1E40AF", fontSize: "0.95rem" }}>
+                            -{(grade.rice.outwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600, color: "#1E40AF" }}>
+                            -{(grade.rice.outwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 600 }}>
+                            {(grade.rice.openingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 500 }}>
+                            {(grade.rice.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800, color: "#DC2626", fontSize: "1rem" }}>
+                            {(grade.rice.closingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800, color: "#DC2626", fontSize: "0.95rem" }}>
+                            {(grade.rice.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                        </TableRow>
+
+                        {/* 3. Subtotal Row */}
+                        <TableRow sx={{ bgcolor: grade.key === "A" ? "#F0F7FF" : "#FAF5FF", borderBottom: "2px solid #CBD5E1" }}>
+                          <TableCell sx={{ fontWeight: 800, color: grade.color }}>
+                            {grade.label} (Net Balance)
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.summary.inwardCount || 0} Inward${(grade.summary.inwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{ height: 20, fontWeight: 700, bgcolor: "#BBF7D0", color: "#14532D" }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800, color: "#166534" }}>
+                            +{(grade.summary.inwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800, color: "#166534" }}>
+                            +{(grade.summary.inwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`${grade.summary.outwardCount || 0} Outward${(grade.summary.outwardCount || 0) === 1 ? "" : "s"}`}
+                              size="small"
+                              sx={{ height: 20, fontWeight: 700, bgcolor: "#BFDBFE", color: "#1E3A8A" }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800, color: "#1E40AF" }}>
+                            -{(grade.summary.outwardBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800, color: "#1E40AF" }}>
+                            -{(grade.summary.outwardWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700 }}>
+                            {(grade.summary.openingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 700 }}>
+                            {(grade.summary.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}>
+                            {(grade.summary.closingBags || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800, color: "#111827", fontSize: "1rem" }}>
+                            {(grade.summary.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
                     ))}
 
                     {/* Total Row */}
