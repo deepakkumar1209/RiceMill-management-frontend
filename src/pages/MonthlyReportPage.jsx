@@ -133,8 +133,9 @@ export default function MonthlyReportPage() {
     let currentBags = Number(report.opening?.bags || 0);
 
     return report.transactions.map((tx) => {
-      currentWeight +=
-        Number(tx.inwardWeight || 0) - Number(tx.outwardWeight || 0);
+      // Deduct paddy equivalent in running weight calculation (e.g. 294.12 Kg)
+      const weightDeduction = Number(tx.paddyEquivalentWeight ?? tx.outwardWeight ?? 0);
+      currentWeight += Number(tx.inwardWeight || 0) - weightDeduction;
       currentBags +=
         Number(tx.inwardBags || 0) - Number(tx.outwardBags || 0);
 
