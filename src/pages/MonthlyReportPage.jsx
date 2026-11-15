@@ -39,6 +39,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 
 import * as XLSX from "xlsx";
 
@@ -257,7 +258,63 @@ export default function MonthlyReportPage() {
     const wsSummary = XLSX.utils.aoa_to_sheet(summarySheetData);
     XLSX.utils.book_append_sheet(wb, wsSummary, "Stock Summary");
 
-    // Sheet 2: Transactions Ledger
+    // Sheet 2: Variety Overview
+    const varietySheetData = [
+      ["VARIETY-WISE STOCK MOVEMENT OVERVIEW"],
+      [`Date Range: ${fromDate} to ${toDate}`],
+      [],
+      [
+        "Variety",
+        "Opening Weight (Kg)",
+        "Opening Bags",
+        "Inward Weight (Kg)",
+        "Inward Bags",
+        "Inward Count",
+        "Outward Weight (Kg)",
+        "Outward Bags",
+        "Outward Count",
+        "Closing Weight (Kg)",
+        "Closing Bags",
+      ],
+    ];
+
+    (report.varietySummary || []).forEach((v) => {
+      varietySheetData.push([
+        `Variety ${v.variety}`,
+        v.openingWeight,
+        v.openingBags,
+        v.inwardWeight,
+        v.inwardBags,
+        v.inwardCount,
+        v.outwardWeight,
+        v.outwardBags,
+        v.outwardCount,
+        v.closingWeight,
+        v.closingBags,
+      ]);
+    });
+
+    const wsVariety = XLSX.utils.aoa_to_sheet(varietySheetData);
+    XLSX.utils.book_append_sheet(wb, wsVariety, "Variety Overview");
+
+    // Sheet 3: Gunny Bags Summary
+    const bagSheetData = [
+      ["GUNNY BAGS INVENTORY SUMMARY"],
+      [`Date Range: ${fromDate} to ${toDate}`],
+      [],
+      ["Bag Type", "Description", "Inward Received", "Outward Issued", "Net Movement"],
+    ];
+
+    if (report.bagSummary) {
+      Object.entries(report.bagSummary).forEach(([key, bag]) => {
+        bagSheetData.push([bag.name, bag.label, bag.inward, bag.outward, bag.net]);
+      });
+    }
+
+    const wsBags = XLSX.utils.aoa_to_sheet(bagSheetData);
+    XLSX.utils.book_append_sheet(wb, wsBags, "Gunny Bags Summary");
+
+    // Sheet 4: Transactions Ledger
     const ledgerSheetData = [
       ["TRANSACTION LEDGER"],
       [
@@ -339,7 +396,7 @@ export default function MonthlyReportPage() {
             Monthly Inventory Report
           </Typography>
           <Typography sx={{ color: "#6B7280", mt: 1 }}>
-            Item & variety-wise stock balances, comprehensive inward/outward
+            Item & variety-wise stock balances, specific gunny bag counts, inward/outward
             movements, and exportable transaction ledger.
           </Typography>
         </Paper>
@@ -412,7 +469,7 @@ export default function MonthlyReportPage() {
         {report && (
           <>
             {/* ==========================
-                1. OVERALL KPI CARDS
+                1. OVERALL KPI CARDS WITH VARIETY BREAKDOWN
             =========================== */}
             <Typography
               variant="h5"
@@ -430,6 +487,7 @@ export default function MonthlyReportPage() {
                     borderRadius: "20px",
                     boxShadow: "0px 8px 24px rgba(0,0,0,0.05)",
                     border: "1px solid #E5E7EB",
+                    height: "100%",
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
@@ -461,9 +519,36 @@ export default function MonthlyReportPage() {
                       </Typography>
                     </Typography>
 
-                    <Typography color="text.secondary" mt={1}>
+                    <Typography color="text.secondary" mt={0.5} fontWeight={600}>
                       {report.opening?.bags ?? 0} Bags
                     </Typography>
+
+                    {/* Variety Breakdown */}
+                    <Divider sx={{ my: 1.5 }} />
+                    <Stack spacing={0.75}>
+                      {(report.varietySummary || []).map((vs) => (
+                        <Stack
+                          key={vs.variety}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Chip
+                            label={`Variety ${vs.variety}`}
+                            size="small"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: "0.72rem", fontWeight: 600 }}
+                          />
+                          <Typography
+                            variant="caption"
+                            fontWeight={600}
+                            color="text.secondary"
+                          >
+                            {vs.openingWeight} Kg · {vs.openingBags} Bags
+                          </Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
@@ -476,6 +561,7 @@ export default function MonthlyReportPage() {
                     boxShadow: "0px 8px 24px rgba(0,0,0,0.05)",
                     border: "1px solid #BBF7D0",
                     bgcolor: "#F0FDF4",
+                    height: "100%",
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
@@ -511,9 +597,9 @@ export default function MonthlyReportPage() {
                       direction="row"
                       justifyContent="space-between"
                       alignItems="center"
-                      mt={1}
+                      mt={0.5}
                     >
-                      <Typography color="#166534">
+                      <Typography color="#166534" fontWeight={600}>
                         {report.summary?.totalInwardBags ?? 0} Bags
                       </Typography>
                       <Chip
@@ -523,8 +609,41 @@ export default function MonthlyReportPage() {
                           bgcolor: "#DCFCE7",
                           color: "#166534",
                           fontWeight: 600,
+                          height: 22,
                         }}
                       />
+                    </Stack>
+
+                    {/* Variety Breakdown */}
+                    <Divider sx={{ my: 1.5, borderColor: "#BBF7D0" }} />
+                    <Stack spacing={0.75}>
+                      {(report.varietySummary || []).map((vs) => (
+                        <Stack
+                          key={vs.variety}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Chip
+                            label={`Variety ${vs.variety}`}
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              bgcolor: "#DCFCE7",
+                              color: "#166534",
+                            }}
+                          />
+                          <Typography
+                            variant="caption"
+                            fontWeight={600}
+                            color="#166534"
+                          >
+                            {vs.inwardWeight} Kg · {vs.inwardBags} Bags ({vs.inwardCount})
+                          </Typography>
+                        </Stack>
+                      ))}
                     </Stack>
                   </CardContent>
                 </Card>
@@ -538,6 +657,7 @@ export default function MonthlyReportPage() {
                     boxShadow: "0px 8px 24px rgba(0,0,0,0.05)",
                     border: "1px solid #BFDBFE",
                     bgcolor: "#EFF6FF",
+                    height: "100%",
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
@@ -573,9 +693,9 @@ export default function MonthlyReportPage() {
                       direction="row"
                       justifyContent="space-between"
                       alignItems="center"
-                      mt={1}
+                      mt={0.5}
                     >
-                      <Typography color="#1E40AF">
+                      <Typography color="#1E40AF" fontWeight={600}>
                         {report.summary?.totalOutwardBags ?? 0} Bags
                       </Typography>
                       <Chip
@@ -585,8 +705,41 @@ export default function MonthlyReportPage() {
                           bgcolor: "#DBEAFE",
                           color: "#1E40AF",
                           fontWeight: 600,
+                          height: 22,
                         }}
                       />
+                    </Stack>
+
+                    {/* Variety Breakdown */}
+                    <Divider sx={{ my: 1.5, borderColor: "#BFDBFE" }} />
+                    <Stack spacing={0.75}>
+                      {(report.varietySummary || []).map((vs) => (
+                        <Stack
+                          key={vs.variety}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Chip
+                            label={`Variety ${vs.variety}`}
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              bgcolor: "#DBEAFE",
+                              color: "#1E40AF",
+                            }}
+                          />
+                          <Typography
+                            variant="caption"
+                            fontWeight={600}
+                            color="#1E40AF"
+                          >
+                            {vs.outwardWeight} Kg · {vs.outwardBags} Bags ({vs.outwardCount})
+                          </Typography>
+                        </Stack>
+                      ))}
                     </Stack>
                   </CardContent>
                 </Card>
@@ -600,6 +753,7 @@ export default function MonthlyReportPage() {
                     boxShadow: "0px 10px 30px rgba(0,0,0,0.15)",
                     bgcolor: "#111827",
                     color: "#FFFFFF",
+                    height: "100%",
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
@@ -631,16 +785,281 @@ export default function MonthlyReportPage() {
                       </Typography>
                     </Typography>
 
-                    <Typography color="#10B981" mt={1} fontWeight={600}>
+                    <Typography color="#10B981" mt={0.5} fontWeight={600}>
                       {report.summary?.closingBags ?? 0} Bags
                     </Typography>
+
+                    {/* Variety Breakdown */}
+                    <Divider sx={{ my: 1.5, borderColor: "#374151" }} />
+                    <Stack spacing={0.75}>
+                      {(report.varietySummary || []).map((vs) => (
+                        <Stack
+                          key={vs.variety}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Chip
+                            label={`Variety ${vs.variety}`}
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              bgcolor: "#1F2937",
+                              color: "#E5E7EB",
+                              borderColor: "#4B5563",
+                            }}
+                          />
+                          <Typography
+                            variant="caption"
+                            fontWeight={600}
+                            color="#9CA3AF"
+                          >
+                            {vs.closingWeight} Kg · {vs.closingBags} Bags
+                          </Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
             </Grid>
 
             {/* ========================================================
-                2. ITEM & VARIETY-WISE BREAKDOWN TABLE
+                2. DEDICATED GUNNY BAGS INVENTORY & COUNTS SECTION
+            ========================================================= */}
+            <Box
+              sx={{
+                mt: 6,
+                mb: 3,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 2,
+              }}
+            >
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <ShoppingBagIcon sx={{ color: "#111827", fontSize: 28 }} />
+                  <Typography variant="h5" fontWeight={700}>
+                    Gunny Bags & Bag Details Summary
+                  </Typography>
+                </Stack>
+                <Typography color="text.secondary" mt={0.5}>
+                  Specific bag counts (NBG, ONB/ONBG, SSG, SWP, USB) and overall
+                  total bag counts across inward received, outward issued, and
+                  net balance.
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Bag Specific Mini KPI Cards */}
+            <Grid container spacing={2.5} sx={{ mb: 3 }}>
+              {report.bagSummary &&
+                Object.entries(report.bagSummary).map(([key, bag]) => (
+                  <Grid
+                    size={{ xs: 12, sm: 6, md: key === "total" ? 12 : 2.4 }}
+                    key={key}
+                  >
+                    <Card
+                      sx={{
+                        borderRadius: "18px",
+                        border:
+                          key === "total"
+                            ? "2px solid #111827"
+                            : "1px solid #E5E7EB",
+                        bgcolor: key === "total" ? "#F8FAFC" : "#FFFFFF",
+                        boxShadow: "0px 6px 20px rgba(0,0,0,0.04)",
+                      }}
+                    >
+                      <CardContent sx={{ p: 2.5 }}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography
+                            fontWeight={700}
+                            fontSize="1rem"
+                            color={key === "total" ? "#111827" : "text.primary"}
+                          >
+                            {bag.name}
+                          </Typography>
+                          <Chip
+                            label={key === "total" ? "All Bags" : bag.label}
+                            size="small"
+                            sx={{
+                              fontSize: "0.7rem",
+                              height: 20,
+                              fontWeight: 600,
+                              bgcolor: key === "total" ? "#111827" : "#F3F4F6",
+                              color: key === "total" ? "#FFFFFF" : "text.secondary",
+                            }}
+                          />
+                        </Stack>
+
+                        <Divider sx={{ my: 1.5 }} />
+
+                        <Grid container spacing={1} textAlign="center">
+                          <Grid size={{ xs: 4 }}>
+                            <Typography variant="caption" color="text.secondary" display="block">
+                              Inward
+                            </Typography>
+                            <Typography fontWeight={700} color="#166534" fontSize="1.05rem">
+                              +{bag.inward}
+                            </Typography>
+                          </Grid>
+                          <Grid size={{ xs: 4 }}>
+                            <Typography variant="caption" color="text.secondary" display="block">
+                              Outward
+                            </Typography>
+                            <Typography fontWeight={700} color="#1E40AF" fontSize="1.05rem">
+                              -{bag.outward}
+                            </Typography>
+                          </Grid>
+                          <Grid size={{ xs: 4 }}>
+                            <Typography variant="caption" color="text.secondary" display="block">
+                              Net
+                            </Typography>
+                            <Typography
+                              fontWeight={800}
+                              fontSize="1.05rem"
+                              color={bag.net >= 0 ? "#111827" : "#DC2626"}
+                            >
+                              {bag.net >= 0 ? `+${bag.net}` : bag.net}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+            </Grid>
+
+            {/* Bag Details Structured Table */}
+            <Paper
+              sx={{
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "1px solid #E5E7EB",
+                boxShadow: "0px 10px 30px rgba(0,0,0,0.05)",
+                mb: 6,
+              }}
+            >
+              <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+                <Table sx={{ minWidth: 800 }}>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: "#F8FAFC" }}>
+                      <TableCell sx={{ fontWeight: 700, py: 2 }}>Bag Category</TableCell>
+                      <TableCell sx={{ fontWeight: 700, py: 2 }}>Description</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700, py: 2 }}>
+                        Inward Bags Received
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700, py: 2 }}>
+                        Outward Bags Issued
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700, py: 2 }}>
+                        Net Balance Movement
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {report.bagSummary &&
+                      Object.entries(report.bagSummary)
+                        .filter(([key]) => key !== "total")
+                        .map(([key, bag]) => (
+                          <TableRow key={key} hover>
+                            <TableCell sx={{ fontWeight: 700 }}>
+                              <Chip
+                                label={bag.name}
+                                size="small"
+                                sx={{
+                                  fontWeight: 700,
+                                  bgcolor: "#EEF2F6",
+                                  color: "#1E293B",
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell color="text.secondary">
+                              {bag.label}
+                            </TableCell>
+                            <TableCell
+                              align="right"
+                              sx={{ color: "#166534", fontWeight: 700 }}
+                            >
+                              +{bag.inward}
+                            </TableCell>
+                            <TableCell
+                              align="right"
+                              sx={{ color: "#1E40AF", fontWeight: 700 }}
+                            >
+                              -{bag.outward}
+                            </TableCell>
+                            <TableCell
+                              align="right"
+                              sx={{
+                                fontWeight: 800,
+                                color: bag.net >= 0 ? "#111827" : "#DC2626",
+                              }}
+                            >
+                              {bag.net >= 0 ? `+${bag.net}` : bag.net}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                    {/* Total Bag Row */}
+                    {report.bagSummary?.total && (
+                      <TableRow
+                        sx={{
+                          bgcolor: "#F1F5F9",
+                          borderTop: "2px solid #CBD5E1",
+                        }}
+                      >
+                        <TableCell sx={{ fontWeight: 800 }}>
+                          TOTAL BAGS
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 700, color: "text.secondary" }}>
+                          All Bag Categories Combined
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}
+                        >
+                          +{report.bagSummary.total.inward}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{ fontWeight: 800, color: "#1E40AF", fontSize: "1rem" }}
+                        >
+                          -{report.bagSummary.total.outward}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            fontWeight: 800,
+                            color:
+                              report.bagSummary.total.net >= 0
+                                ? "#0F172A"
+                                : "#DC2626",
+                            fontSize: "1.05rem",
+                          }}
+                        >
+                          {report.bagSummary.total.net >= 0
+                            ? `+${report.bagSummary.total.net}`
+                            : report.bagSummary.total.net}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+
+            {/* ========================================================
+                3. ITEM & VARIETY-WISE BREAKDOWN TABLE
             ========================================================= */}
             <Box
               sx={{
@@ -725,9 +1144,17 @@ export default function MonthlyReportPage() {
                             variant="outlined"
                             sx={{
                               borderColor:
-                                row.variety === "C" ? "#F59E0B" : "#3B82F6",
+                                row.variety === "C"
+                                  ? "#F59E0B"
+                                  : row.variety === "B"
+                                  ? "#8B5CF6"
+                                  : "#3B82F6",
                               color:
-                                row.variety === "C" ? "#B45309" : "#1D4ED8",
+                                row.variety === "C"
+                                  ? "#B45309"
+                                  : row.variety === "B"
+                                  ? "#6D28D9"
+                                  : "#1D4ED8",
                               fontWeight: 600,
                             }}
                           />
@@ -875,7 +1302,7 @@ export default function MonthlyReportPage() {
             </Paper>
 
             {/* ========================================================
-                3. TRANSACTION LEDGER WITH FILTERS & EXPORT
+                4. TRANSACTION LEDGER WITH FILTERS & EXPORT
             ========================================================= */}
             <Box
               sx={{
@@ -1006,6 +1433,7 @@ export default function MonthlyReportPage() {
                     >
                       <MenuItem value="ALL">All Varieties</MenuItem>
                       <MenuItem value="A">Variety A</MenuItem>
+                      <MenuItem value="B">Variety B</MenuItem>
                       <MenuItem value="C">Variety C</MenuItem>
                     </Select>
                   </FormControl>
@@ -1130,9 +1558,17 @@ export default function MonthlyReportPage() {
                               variant="outlined"
                               sx={{
                                 borderColor:
-                                  row.variety === "C" ? "#F59E0B" : "#94A3B8",
+                                  row.variety === "C"
+                                    ? "#F59E0B"
+                                    : row.variety === "B"
+                                    ? "#8B5CF6"
+                                    : "#94A3B8",
                                 color:
-                                  row.variety === "C" ? "#B45309" : "#475569",
+                                  row.variety === "C"
+                                    ? "#B45309"
+                                    : row.variety === "B"
+                                    ? "#6D28D9"
+                                    : "#475569",
                                 fontWeight: 600,
                               }}
                             />
@@ -1188,7 +1624,7 @@ export default function MonthlyReportPage() {
             </Paper>
 
             {/* ========================================================
-                4. CLOSE MONTH SECTION
+                5. CLOSE MONTH SECTION
             ========================================================= */}
             <Paper
               sx={{

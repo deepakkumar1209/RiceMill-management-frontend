@@ -467,6 +467,10 @@ spacing={3}
       A
     </MenuItem>
 
+    <MenuItem value="B">
+      B
+    </MenuItem>
+
     <MenuItem value="C">
       C
     </MenuItem>

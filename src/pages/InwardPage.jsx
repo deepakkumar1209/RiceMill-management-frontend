@@ -550,6 +550,10 @@ return (
       A
     </MenuItem>
 
+    <MenuItem value="B">
+      B
+    </MenuItem>
+
     <MenuItem value="C">
       C
     </MenuItem>
