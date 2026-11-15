@@ -787,7 +787,7 @@ export default function MonthlyReportPage() {
                           }}
                         />
                         <Chip
-                          label={`Closing: ${vs.closingBags} Bags`}
+                          label={`Closing: ${(vs.closingWeight || 0).toLocaleString()} Kg · ${(vs.closingBags || 0).toLocaleString()} Bags`}
                           size="small"
                           sx={{
                             fontWeight: 800,
@@ -846,19 +846,19 @@ export default function MonthlyReportPage() {
                                 color="#111827"
                                 sx={{ lineHeight: 1.2 }}
                               >
-                                {vs.openingBags}
+                                {(vs.openingWeight || 0).toLocaleString()}
                                 <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#4B5563" }}>
-                                  Bags
+                                  Kg
                                 </Typography>
                               </Typography>
 
                               <Typography
                                 variant="body2"
                                 color="text.secondary"
-                                fontWeight={600}
+                                fontWeight={700}
                                 mt={0.5}
                               >
-                                {vs.openingWeight} Kg
+                                {(vs.openingBags || 0).toLocaleString()} Bags
                               </Typography>
                             </Box>
 
@@ -913,9 +913,9 @@ export default function MonthlyReportPage() {
                                 color="#166534"
                                 sx={{ lineHeight: 1.2 }}
                               >
-                                +{vs.inwardBags}
+                                +{(vs.inwardWeight || 0).toLocaleString()}
                                 <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#166534" }}>
-                                  Bags
+                                  Kg
                                 </Typography>
                               </Typography>
 
@@ -925,7 +925,7 @@ export default function MonthlyReportPage() {
                                 fontWeight={700}
                                 mt={0.5}
                               >
-                                +{vs.inwardWeight} Kg
+                                +{(vs.inwardBags || 0).toLocaleString()} Bags
                               </Typography>
                             </Box>
 
@@ -980,9 +980,9 @@ export default function MonthlyReportPage() {
                                 color="#1E40AF"
                                 sx={{ lineHeight: 1.2 }}
                               >
-                                -{vs.outwardBags}
+                                -{(vs.outwardWeight || 0).toLocaleString()}
                                 <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#1E40AF" }}>
-                                  Bags
+                                  Kg
                                 </Typography>
                               </Typography>
 
@@ -992,7 +992,7 @@ export default function MonthlyReportPage() {
                                 fontWeight={700}
                                 mt={0.5}
                               >
-                                -{vs.outwardWeight} Kg
+                                -{(vs.outwardBags || 0).toLocaleString()} Bags
                               </Typography>
                             </Box>
 
@@ -1049,9 +1049,9 @@ export default function MonthlyReportPage() {
                                 color="#34D399"
                                 sx={{ lineHeight: 1.2 }}
                               >
-                                {vs.closingBags}
+                                {(vs.closingWeight || 0).toLocaleString()}
                                 <Typography component="span" variant="body2" fontWeight={700} sx={{ ml: 0.5, color: "#A7F3D0" }}>
-                                  Bags
+                                  Kg
                                 </Typography>
                               </Typography>
 
@@ -1061,7 +1061,7 @@ export default function MonthlyReportPage() {
                                 fontWeight={700}
                                 mt={0.5}
                               >
-                                {vs.closingWeight} Kg
+                                {(vs.closingBags || 0).toLocaleString()} Bags
                               </Typography>
                             </Box>
 
@@ -1119,8 +1119,8 @@ export default function MonthlyReportPage() {
                       <TableCell align="right" sx={{ fontWeight: 700, color: "#1E40AF" }}>Outward Weight (Kg)</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700 }}>Opening Bags</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 700 }}>Opening Wt (Kg)</TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#34D399" }}>Closing Bags</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#FFFFFF" }}>Closing Wt (Kg)</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 800, color: "#111827" }}>Closing Bags</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 800, color: "#111827" }}>Closing Wt (Kg)</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -1180,10 +1180,10 @@ export default function MonthlyReportPage() {
                         <TableCell align="right" sx={{ fontWeight: 500 }}>
                           {(vs.openingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#34D399", fontSize: "1rem" }}>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: "#166534", fontSize: "1rem" }}>
                           {(vs.closingBags || 0).toLocaleString()}
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 800, bgcolor: "#111827", color: "#FFFFFF", fontSize: "0.95rem" }}>
+                        <TableCell align="right" sx={{ fontWeight: 800, color: "#111827", fontSize: "0.95rem" }}>
                           {(vs.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
                       </TableRow>
@@ -1227,10 +1227,10 @@ export default function MonthlyReportPage() {
                         <TableCell align="right" sx={{ fontWeight: 800 }}>
                           {report.varietySummary.reduce((sum, v) => sum + (v.openingWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 900, bgcolor: "#0F172A", color: "#34D399", fontSize: "1.05rem" }}>
+                        <TableCell align="center" sx={{ fontWeight: 900, color: "#166534", fontSize: "1.05rem" }}>
                           {report.varietySummary.reduce((sum, v) => sum + (v.closingBags || 0), 0).toLocaleString()}
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 900, bgcolor: "#0F172A", color: "#FFFFFF", fontSize: "1rem" }}>
+                        <TableCell align="right" sx={{ fontWeight: 900, color: "#111827", fontSize: "1rem" }}>
                           {report.varietySummary.reduce((sum, v) => sum + (v.closingWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
                       </TableRow>
