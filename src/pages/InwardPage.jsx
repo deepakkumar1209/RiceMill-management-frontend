@@ -71,13 +71,13 @@ const [formData, setFormData] = useState({
 
   variety: "A",
 
-  netWeight: "",
   totalNetWeight: "",
 
   nbg: 0,
   onb: 0,
   ssg: 0,
   swp: 0,
+  usb: 0,
 
   noOfBags: 0,
   totalNoOfBags: 0,
@@ -115,12 +115,12 @@ useEffect(() => {
         warehouse: data.warehouse ?? "",
         lorryNo: data.lorryNo ?? "",
         variety: data.variety ?? "A",
-        netWeight: data.netWeight ?? "",
-        totalNetWeight: data.totalNetWeight ?? "",
+        totalNetWeight: data.totalNetWeight ?? data.netWeight ?? "",
         nbg: data.nbg ?? 0,
         onb: data.onb ?? 0,
         ssg: data.ssg ?? 0,
         swp: data.swp ?? 0,
+        usb: data.usb ?? 0,
         noOfBags: data.noOfBags ?? 0,
         totalNoOfBags: data.totalNoOfBags ?? 0,
         riceOutturn: data.riceOutturn ?? "",
@@ -159,10 +159,23 @@ const loadItems = async () => {
   setItems(data);
 
   if (!idParam && data.length > 0) {
-    setFormData((prev) => ({
-      ...prev,
-      item: prev.item || data[0].itemName,
-    }));
+    const defaultItem = data[0];
+    const defaultOutturn = Number(defaultItem.outlet || 0);
+
+    setFormData((prev) => {
+      const selectedItemName = prev.item || defaultItem.itemName;
+      const currentItem = data.find((i) => i.itemName === selectedItemName) || defaultItem;
+      const outturn = Number(currentItem.outlet || defaultOutturn || 0);
+      const totalWeight = Number(prev.totalNetWeight || 0);
+      const calculatedDue = outturn > 0 && totalWeight > 0 ? Number(((totalWeight * outturn) / 100).toFixed(2)) : "";
+
+      return {
+        ...prev,
+        item: selectedItemName,
+        riceOutturn: prev.riceOutturn !== "" ? prev.riceOutturn : (outturn > 0 ? String(outturn) : ""),
+        totalRiceDue: prev.totalRiceDue !== "" ? prev.totalRiceDue : (calculatedDue !== "" ? String(calculatedDue) : ""),
+      };
+    });
   }
 };
 
@@ -208,6 +221,19 @@ const loadVehicles = async () => {
 const handleChange = (e) => {
   const { name, value } = e.target;
 
+  if (name === "totalNetWeight") {
+    const weight = Number(value || 0);
+    const outturn = Number(formData.riceOutturn || 0);
+    const riceDue = outturn > 0 && weight > 0 ? Number(((weight * outturn) / 100).toFixed(2)) : "";
+
+    setFormData((prev) => ({
+      ...prev,
+      totalNetWeight: value,
+      totalRiceDue: riceDue !== "" ? String(riceDue) : "",
+    }));
+    return;
+  }
+
   setFormData((prev) => ({
     ...prev,
     [name]: value,
@@ -217,130 +243,82 @@ const handleChange = (e) => {
 
 const handleSubmit = async () => {
   try {
+    const totalWeight = Number(formData.totalNetWeight || 0);
+    const outturn = Number(formData.riceOutturn || 0);
+    const calculatedDue = outturn > 0 && totalWeight > 0 ? Number(((totalWeight * outturn) / 100).toFixed(2)) : 0;
+    const totalDue = Number(formData.totalRiceDue || calculatedDue);
+
+    const totalBags =
+      Number(formData.nbg || 0) +
+      Number(formData.onb || 0) +
+      Number(formData.ssg || 0) +
+      Number(formData.swp || 0) +
+      Number(formData.usb || 0);
 
     const payload = {
-
       ...formData,
-
-      netWeight: Number(formData.netWeight || 0),
-
-      totalNetWeight: Number(formData.totalNetWeight || 0),
-
+      netWeight: totalWeight,
+      totalNetWeight: totalWeight,
       nbg: Number(formData.nbg || 0),
-
       onb: Number(formData.onb || 0),
-
       ssg: Number(formData.ssg || 0),
-
       swp: Number(formData.swp || 0),
-
-      noOfBags:
-
-        Number(formData.nbg || 0) +
-
-        Number(formData.onb || 0) +
-
-        Number(formData.ssg || 0) +
-
-        Number(formData.swp || 0),
-
-      totalNoOfBags:
-
-        Number(formData.nbg || 0) +
-
-        Number(formData.onb || 0) +
-
-        Number(formData.ssg || 0) +
-
-        Number(formData.swp || 0),
-
-      riceOutturn:Number(formData.riceOutturn||0),
-
-      totalRiceDue:Number(formData.totalRiceDue||0),
-
+      usb: Number(formData.usb || 0),
+      noOfBags: totalBags,
+      totalNoOfBags: totalBags,
+      riceOutturn: outturn,
+      totalRiceDue: totalDue,
     };
 
     console.log(payload);
 
-    if(editId){
-
-      await updateInward(editId,payload);
-
+    if (editId) {
+      await updateInward(editId, payload);
       setMessage("Updated Successfully");
-
-    }
-
-    else{
-
+    } else {
       await createInward(payload);
-
       setMessage("Saved Successfully");
-
     }
 
     loadInwards();
-
     setSuccess(true);
-
     resetForm();
-
-  }
-
-  catch(error){
-
+  } catch (error) {
     console.log(error);
-
   }
-
 };
 
 const resetForm = () => {
-
   setEditId(null);
 
   if (idParam) {
     navigate("/inwards", { replace: true });
   }
 
+  const defaultItem = items.length ? items[0] : null;
+  const defaultOutturn = defaultItem ? Number(defaultItem.outlet || 0) : "";
+
   setFormData({
-
-    issueDate:new Date().toISOString().substring(0,10),
-
-    acknowledgeDate:new Date().toISOString().substring(0,10),
-
-    issueMemoNo:"",
-
-    acknowledgeNumber:"",
-
-   item: items.length ? items[0].itemName : "",
-   dpcFrom: dpcs.length ? dpcs[0].dpcName : "",
-  warehouse: warehouses.length ? warehouses[0].warehouseName : "",
-  lorryNo: vehicles.length ? vehicles[0].vehicleNumber : "",
-
-    variety:"A",
-
-    netWeight:"",
-
-    totalNetWeight:"",
-
-    nbg:0,
-
-    onb:0,
-
-    ssg:0,
-
-    swp:0,
-
-    noOfBags:0,
-
-    totalNoOfBags:0,
-
-    riceOutturn:"",
-
-    totalRiceDue:""
-
+    issueDate: new Date().toISOString().substring(0, 10),
+    acknowledgeDate: new Date().toISOString().substring(0, 10),
+    issueMemoNo: "",
+    acknowledgeNumber: "",
+    item: defaultItem ? defaultItem.itemName : "",
+    dpcFrom: dpcs.length ? dpcs[0].dpcName : "",
+    warehouse: warehouses.length ? warehouses[0].warehouseName : "",
+    lorryNo: vehicles.length ? vehicles[0].vehicleNumber : "",
+    variety: "A",
+    totalNetWeight: "",
+    nbg: 0,
+    onb: 0,
+    ssg: 0,
+    swp: 0,
+    usb: 0,
+    noOfBags: 0,
+    totalNoOfBags: 0,
+    riceOutturn: defaultOutturn ? String(defaultOutturn) : "",
+    totalRiceDue: "",
   });
-
 };
 
 return (
@@ -452,12 +430,22 @@ return (
       (item) => item.itemName === formData.item
     ) || null
   }
-  onChange={(event, newValue) =>
-    setFormData({
-      ...formData,
-      item: newValue ? newValue.itemName : "",
-    })
-  }
+  onChange={(event, newValue) => {
+    const selectedName = newValue ? newValue.itemName : "";
+    const outturn = newValue ? Number(newValue.outlet || 0) : 0;
+    const totalWeight = Number(formData.totalNetWeight || 0);
+    const calculatedDue =
+      outturn > 0 && totalWeight > 0
+        ? Number(((totalWeight * outturn) / 100).toFixed(2))
+        : "";
+
+    setFormData((prev) => ({
+      ...prev,
+      item: selectedName,
+      riceOutturn: outturn > 0 ? String(outturn) : "",
+      totalRiceDue: calculatedDue !== "" ? String(calculatedDue) : "",
+    }));
+  }}
   renderInput={(params) => (
     <TextField
       {...params}
@@ -549,7 +537,7 @@ return (
   )}
 />
 </Grid>
-<Grid size={{ xs: 12, md: 2 }}>
+<Grid size={{ xs: 12, md: 4 }}>
   <TextField
     select
     fullWidth
@@ -567,17 +555,7 @@ return (
     </MenuItem>
   </TextField>
 </Grid>
-<Grid size={{ xs: 12, md: 4 }}>
-  <TextField
-    fullWidth
-    type="number"
-    label="Net Weight"
-    name="netWeight"
-    value={formData.netWeight}
-    onChange={handleChange}
-  />
-</Grid>
-<Grid size={{ xs: 12, md: 4 }}>
+<Grid size={{ xs: 12, md: 8 }}>
   <TextField
     fullWidth
     type="number"
@@ -612,7 +590,7 @@ return (
   container
   spacing={3}
 >
-<Grid size={{ xs: 3 }}>
+<Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
 <TextField
 fullWidth
 label="NBG"
@@ -623,7 +601,7 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid size={{ xs: 3 }}>
+<Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
 <TextField
 fullWidth
 label="ONB"
@@ -634,7 +612,7 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid size={{ xs: 3 }}>
+<Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
 <TextField
 fullWidth
 label="SSG"
@@ -645,13 +623,24 @@ onChange={handleChange}
 />
 </Grid>
 
-<Grid size={{ xs: 3 }}>
+<Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
 <TextField
 fullWidth
 label="SWP"
 name="swp"
 type="number"
 value={formData.swp}
+onChange={handleChange}
+/>
+</Grid>
+
+<Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+<TextField
+fullWidth
+label="USB"
+name="usb"
+type="number"
+value={formData.usb}
 onChange={handleChange}
 />
 </Grid>
@@ -665,7 +654,8 @@ value={
 Number(formData.nbg || 0) +
 Number(formData.onb || 0) +
 Number(formData.ssg || 0) +
-Number(formData.swp || 0)
+Number(formData.swp || 0) +
+Number(formData.usb || 0)
 }
 InputProps={{
 readOnly:true,
@@ -676,10 +666,13 @@ readOnly:true,
   <TextField
     fullWidth
     type="number"
-    label="Rice Outturn"
+    label="Rice Outturn (%)"
     name="riceOutturn"
     value={formData.riceOutturn}
-    onChange={handleChange}
+    helperText="Auto-filled from selected Item"
+    InputProps={{
+      readOnly: true,
+    }}
   />
 </Grid>
 <Grid size={{ xs: 12, md: 4 }}>
@@ -689,7 +682,10 @@ readOnly:true,
     label="Total Rice Due"
     name="totalRiceDue"
     value={formData.totalRiceDue}
-    onChange={handleChange}
+    helperText="Auto-calculated: (Total Net Weight × Outturn) / 100"
+    InputProps={{
+      readOnly: true,
+    }}
   />
 </Grid>
 

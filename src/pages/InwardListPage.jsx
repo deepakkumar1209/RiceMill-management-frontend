@@ -289,8 +289,6 @@ startAdornment:(
 
     <TableCell sx={{ fontWeight: 700 }}>Variety</TableCell>
 
-    <TableCell sx={{ fontWeight: 700 }}>Net Weight</TableCell>
-
     <TableCell sx={{ fontWeight: 700 }}>Total Net Weight</TableCell>
 
     <TableCell sx={{ fontWeight: 700 }}>NBG</TableCell>
@@ -301,6 +299,7 @@ startAdornment:(
 
     <TableCell sx={{ fontWeight: 700 }}>SWP</TableCell>
 
+    <TableCell sx={{ fontWeight: 700 }}>USB</TableCell>
 
     <TableCell sx={{ fontWeight: 700 }}>Total Bags</TableCell>
 
@@ -377,11 +376,6 @@ startAdornment:(
     {row.variety || "-"}
   </TableCell>
 
-  {/* Net Weight */}
-  <TableCell>
-    {row.netWeight ?? "-"}
-  </TableCell>
-
   {/* Total Net Weight */}
   <TableCell>
     {row.totalNetWeight ?? "-"}
@@ -405,6 +399,11 @@ startAdornment:(
   {/* SWP */}
   <TableCell>
     {row.swp ?? "-"}
+  </TableCell>
+
+  {/* USB */}
+  <TableCell>
+    {row.usb ?? "-"}
   </TableCell>
 
   {/* Total Bags */}
