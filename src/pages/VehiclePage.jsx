@@ -174,20 +174,23 @@ async (id) => {
 };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: 4,
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#F8FAFC",
           minHeight: "100vh",
+          boxSizing: "border-box",
         }}
       >
         <Paper
           sx={{
-            p: 4,
+            p: { xs: 2, sm: 3, md: 4 },
             borderRadius: "20px",
             border:
               "1px solid #E5E7EB",
@@ -373,8 +376,8 @@ async (id) => {
     overflow:"hidden",
   }}
 >
-  <TableContainer>
-    <Table>
+  <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+    <Table sx={{ minWidth: 650 }}>
       <TableHead>
         <TableRow>
 

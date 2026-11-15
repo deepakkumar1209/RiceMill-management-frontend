@@ -185,15 +185,18 @@ export default function UserListPage() {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: 4,
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#F8FAFC",
           minHeight: "100vh",
+          boxSizing: "border-box",
         }}
       >
         {/* Header */}
@@ -201,7 +204,9 @@ export default function UserListPage() {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
             mb: 4,
           }}
         >
@@ -282,8 +287,8 @@ export default function UserListPage() {
               "0px 5px 20px rgba(0,0,0,0.05)",
           }}
         >
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+            <Table sx={{ minWidth: 700 }}>
               <TableHead>
                 <TableRow
                   sx={{

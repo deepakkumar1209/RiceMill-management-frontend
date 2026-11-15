@@ -370,16 +370,18 @@ export default function MonthlyReportPage() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: 4,
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#F8FAFC",
           minHeight: "100vh",
-          overflowX: "hidden",
+          boxSizing: "border-box",
         }}
       >
         {/* ==========================================
@@ -387,13 +389,17 @@ export default function MonthlyReportPage() {
         =========================================== */}
         <Paper
           sx={{
-            p: 4,
+            p: { xs: 2.5, sm: 3, md: 4 },
             borderRadius: "20px",
             border: "1px solid #E5E7EB",
             boxShadow: "0px 10px 25px rgba(0,0,0,0.05)",
           }}
         >
-          <Typography variant="h4" fontWeight={700}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            sx={{ fontSize: { xs: "1.65rem", sm: "2rem", md: "2.125rem" } }}
+          >
             Monthly Inventory Report
           </Typography>
           <Typography sx={{ color: "#6B7280", mt: 1 }}>
@@ -407,8 +413,8 @@ export default function MonthlyReportPage() {
         =========================================== */}
         <Paper
           sx={{
-            mt: 4,
-            p: 4,
+            mt: 3,
+            p: { xs: 2.5, sm: 3, md: 4 },
             borderRadius: "20px",
             border: "1px solid #E5E7EB",
             boxShadow: "0px 10px 25px rgba(0,0,0,0.05)",
@@ -1107,8 +1113,8 @@ export default function MonthlyReportPage() {
                 </Typography>
               </Box>
 
-              <TableContainer>
-                <Table size="small">
+              <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+                <Table size="small" sx={{ minWidth: 950 }}>
                   <TableHead sx={{ bgcolor: "#F1F5F9" }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 700 }}>Variety</TableCell>

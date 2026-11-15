@@ -162,22 +162,25 @@ const resetForm = () => {
 };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: 4,
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#F8FAFC",
           minHeight: "100vh",
+          boxSizing: "border-box",
         }}
       >
         <Paper
           sx={{
             maxWidth: 1200,
             mx: "auto",
-            p: 5,
+            p: { xs: 2.5, sm: 3.5, md: 5 },
             borderRadius: 5,
             boxShadow:
               "0 15px 40px rgba(0,0,0,0.05)",
@@ -327,8 +330,8 @@ const resetForm = () => {
     overflow: "hidden",
   }}
 >
-  <TableContainer>
-    <Table>
+  <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+    <Table sx={{ minWidth: 650 }}>
       <TableHead>
         <TableRow>
           <TableCell>

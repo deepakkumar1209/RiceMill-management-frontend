@@ -113,15 +113,18 @@ export default function CreateUserPage() {
   };
 
   return (
-  <Box sx={{ display: "flex" }}>
+  <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
     <Sidebar />
 
     <Box
       sx={{
         flex: 1,
-        p: 4,
+        minWidth: 0,
+        width: "100%",
+        p: { xs: 2, sm: 3, md: 4 },
         bgcolor: "#F8FAFC",
         minHeight: "100vh",
+        boxSizing: "border-box",
       }}
     >
       <Paper
@@ -131,7 +134,7 @@ export default function CreateUserPage() {
           mx: "auto",
           borderRadius: 4,
           border: "1px solid #E5E7EB",
-          p: 4,
+          p: { xs: 2.5, sm: 3.5, md: 4 },
           background: "#fff",
           boxShadow: "0px 10px 40px rgba(0,0,0,0.05)",
         }}

@@ -145,15 +145,18 @@ export default function DashboardPage() {
   }, [report]);
 
   return (
-    <Box sx={{ display: "flex", bgcolor: "#F9FAFB", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, bgcolor: "#F9FAFB", minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: { xs: 2.5, md: 4 },
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           maxWidth: "1600px",
           margin: "0 auto",
+          boxSizing: "border-box",
         }}
       >
         {/* ========================================================
@@ -163,14 +166,20 @@ export default function DashboardPage() {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
             flexWrap: "wrap",
             gap: 2,
             mb: 4,
           }}
         >
           <Box>
-            <Typography variant="h4" fontWeight={800} color="#111827">
+            <Typography
+              variant="h4"
+              fontWeight={800}
+              color="#111827"
+              sx={{ fontSize: { xs: "1.65rem", sm: "2rem", md: "2.125rem" } }}
+            >
               Dashboard
             </Typography>
             <Typography color="text.secondary" mt={0.5} fontSize="0.95rem">
@@ -532,8 +541,8 @@ export default function DashboardPage() {
                 />
               </Box>
 
-              <TableContainer>
-                <Table>
+              <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+                <Table sx={{ minWidth: 800 }}>
                   <TableHead sx={{ bgcolor: "#F8FAFC" }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 800, color: "#374151", py: 2 }}>

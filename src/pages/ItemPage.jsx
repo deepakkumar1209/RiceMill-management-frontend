@@ -154,22 +154,25 @@ const [formData, setFormData] = useState({
     };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
       <Sidebar />
 
       <Box
         sx={{
           flex: 1,
-          p: 4,
+          minWidth: 0,
+          width: "100%",
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#F8FAFC",
           minHeight: "100vh",
+          boxSizing: "border-box",
         }}
       >
         {/* FORM CARD */}
 
         <Paper
           sx={{
-            p: 4,
+            p: { xs: 2, sm: 3, md: 4 },
             borderRadius:
               "20px",
             border:
@@ -309,8 +312,8 @@ const [formData, setFormData] = useState({
               "0px 10px 25px rgba(0,0,0,0.05)",
           }}
         >
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+            <Table sx={{ minWidth: 650 }}>
               <TableHead>
                 <TableRow>
                   <TableCell>
