@@ -469,7 +469,7 @@ export default function MonthlyReportPage() {
         {report && (
           <>
             {/* ==========================
-                1. OVERALL KPI CARDS WITH VARIETY BREAKDOWN
+                1. OVERALL KPI CARDS
             =========================== */}
             <Typography
               variant="h5"
@@ -522,33 +522,6 @@ export default function MonthlyReportPage() {
                     <Typography color="text.secondary" mt={0.5} fontWeight={600}>
                       {report.opening?.bags ?? 0} Bags
                     </Typography>
-
-                    {/* Variety Breakdown */}
-                    <Divider sx={{ my: 1.5 }} />
-                    <Stack spacing={0.75}>
-                      {(report.varietySummary || []).map((vs) => (
-                        <Stack
-                          key={vs.variety}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Chip
-                            label={`Variety ${vs.variety}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{ height: 20, fontSize: "0.72rem", fontWeight: 600 }}
-                          />
-                          <Typography
-                            variant="caption"
-                            fontWeight={600}
-                            color="text.secondary"
-                          >
-                            {vs.openingWeight} Kg · {vs.openingBags} Bags
-                          </Typography>
-                        </Stack>
-                      ))}
-                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
@@ -612,38 +585,6 @@ export default function MonthlyReportPage() {
                           height: 22,
                         }}
                       />
-                    </Stack>
-
-                    {/* Variety Breakdown */}
-                    <Divider sx={{ my: 1.5, borderColor: "#BBF7D0" }} />
-                    <Stack spacing={0.75}>
-                      {(report.varietySummary || []).map((vs) => (
-                        <Stack
-                          key={vs.variety}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Chip
-                            label={`Variety ${vs.variety}`}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.72rem",
-                              fontWeight: 600,
-                              bgcolor: "#DCFCE7",
-                              color: "#166534",
-                            }}
-                          />
-                          <Typography
-                            variant="caption"
-                            fontWeight={600}
-                            color="#166534"
-                          >
-                            {vs.inwardWeight} Kg · {vs.inwardBags} Bags ({vs.inwardCount})
-                          </Typography>
-                        </Stack>
-                      ))}
                     </Stack>
                   </CardContent>
                 </Card>
@@ -709,38 +650,6 @@ export default function MonthlyReportPage() {
                         }}
                       />
                     </Stack>
-
-                    {/* Variety Breakdown */}
-                    <Divider sx={{ my: 1.5, borderColor: "#BFDBFE" }} />
-                    <Stack spacing={0.75}>
-                      {(report.varietySummary || []).map((vs) => (
-                        <Stack
-                          key={vs.variety}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Chip
-                            label={`Variety ${vs.variety}`}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.72rem",
-                              fontWeight: 600,
-                              bgcolor: "#DBEAFE",
-                              color: "#1E40AF",
-                            }}
-                          />
-                          <Typography
-                            variant="caption"
-                            fontWeight={600}
-                            color="#1E40AF"
-                          >
-                            {vs.outwardWeight} Kg · {vs.outwardBags} Bags ({vs.outwardCount})
-                          </Typography>
-                        </Stack>
-                      ))}
-                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
@@ -788,42 +697,277 @@ export default function MonthlyReportPage() {
                     <Typography color="#10B981" mt={0.5} fontWeight={600}>
                       {report.summary?.closingBags ?? 0} Bags
                     </Typography>
-
-                    {/* Variety Breakdown */}
-                    <Divider sx={{ my: 1.5, borderColor: "#374151" }} />
-                    <Stack spacing={0.75}>
-                      {(report.varietySummary || []).map((vs) => (
-                        <Stack
-                          key={vs.variety}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Chip
-                            label={`Variety ${vs.variety}`}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.72rem",
-                              fontWeight: 600,
-                              bgcolor: "#1F2937",
-                              color: "#E5E7EB",
-                              borderColor: "#4B5563",
-                            }}
-                          />
-                          <Typography
-                            variant="caption"
-                            fontWeight={600}
-                            color="#9CA3AF"
-                          >
-                            {vs.closingWeight} Kg · {vs.closingBags} Bags
-                          </Typography>
-                        </Stack>
-                      ))}
-                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
+            </Grid>
+
+            {/* ========================================================
+                2. DEDICATED VARIETY SUMMARY SECTION (VARIETY A & VARIETY B)
+            ========================================================= */}
+            <Box sx={{ mt: 6, mb: 3 }}>
+              <Typography variant="h5" fontWeight={700}>
+                Variety Movement & Stock Counts (Variety A & Variety B)
+              </Typography>
+              <Typography color="text.secondary" mt={0.5}>
+                Specific counts, weights, inward received, and outward issued grouped by variety.
+              </Typography>
+            </Box>
+
+            <Grid container spacing={3}>
+              {(report.varietySummary || []).map((vs) => (
+                <Grid size={{ xs: 12, md: 6 }} key={vs.variety}>
+                  <Card
+                    sx={{
+                      borderRadius: "20px",
+                      border:
+                        vs.variety === "A"
+                          ? "1.5px solid #93C5FD"
+                          : "1.5px solid #DDD6FE",
+                      bgcolor: "#FFFFFF",
+                      boxShadow: "0px 8px 24px rgba(0,0,0,0.04)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        p: 2.5,
+                        bgcolor: vs.variety === "A" ? "#EFF6FF" : "#F5F3FF",
+                        borderBottom: "1px solid #E5E7EB",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <Chip
+                          label={`Variety ${vs.variety}`}
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            bgcolor: vs.variety === "A" ? "#2563EB" : "#7C3AED",
+                            color: "#FFFFFF",
+                          }}
+                        />
+                        <Typography variant="subtitle1" fontWeight={700} color="#111827">
+                          {vs.variety === "A"
+                            ? "Grade A / Fine Quality"
+                            : "Common Variety B"}
+                        </Typography>
+                      </Stack>
+                      <Chip
+                        label={`Closing: ${vs.closingWeight} Kg | ${vs.closingBags} Bags`}
+                        sx={{
+                          fontWeight: 700,
+                          bgcolor: "#111827",
+                          color: "#FFFFFF",
+                        }}
+                      />
+                    </Box>
+
+                    <CardContent sx={{ p: 2.5 }}>
+                      <Grid container spacing={2}>
+                        {/* Opening Stock */}
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderRadius: "12px",
+                              bgcolor: "#F9FAFB",
+                              border: "1px solid #F3F4F6",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              fontWeight={700}
+                            >
+                              OPENING
+                            </Typography>
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={700}
+                              color="#111827"
+                              mt={0.5}
+                            >
+                              {vs.openingWeight}{" "}
+                              <Typography component="span" variant="caption">
+                                Kg
+                              </Typography>
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                            >
+                              {vs.openingBags} Bags
+                            </Typography>
+                          </Box>
+                        </Grid>
+
+                        {/* Inward Stock */}
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderRadius: "12px",
+                              bgcolor: "#F0FDF4",
+                              border: "1px solid #DCFCE7",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Stack
+                              direction="row"
+                              justifyContent="center"
+                              spacing={0.5}
+                              alignItems="center"
+                            >
+                              <Typography
+                                variant="caption"
+                                color="#166534"
+                                fontWeight={700}
+                              >
+                                INWARD
+                              </Typography>
+                              <Chip
+                                label={`${vs.inwardCount || 0}`}
+                                size="small"
+                                sx={{
+                                  height: 16,
+                                  fontSize: "0.65rem",
+                                  bgcolor: "#DCFCE7",
+                                  color: "#166534",
+                                  fontWeight: 700,
+                                }}
+                              />
+                            </Stack>
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={700}
+                              color="#166534"
+                              mt={0.5}
+                            >
+                              +{vs.inwardWeight}{" "}
+                              <Typography component="span" variant="caption">
+                                Kg
+                              </Typography>
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="#166534"
+                              display="block"
+                            >
+                              {vs.inwardBags} Bags
+                            </Typography>
+                          </Box>
+                        </Grid>
+
+                        {/* Outward Stock */}
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderRadius: "12px",
+                              bgcolor: "#EFF6FF",
+                              border: "1px solid #DBEAFE",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Stack
+                              direction="row"
+                              justifyContent="center"
+                              spacing={0.5}
+                              alignItems="center"
+                            >
+                              <Typography
+                                variant="caption"
+                                color="#1E40AF"
+                                fontWeight={700}
+                              >
+                                OUTWARD
+                              </Typography>
+                              <Chip
+                                label={`${vs.outwardCount || 0}`}
+                                size="small"
+                                sx={{
+                                  height: 16,
+                                  fontSize: "0.65rem",
+                                  bgcolor: "#DBEAFE",
+                                  color: "#1E40AF",
+                                  fontWeight: 700,
+                                }}
+                              />
+                            </Stack>
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={700}
+                              color="#1E40AF"
+                              mt={0.5}
+                            >
+                              -{vs.outwardWeight}{" "}
+                              <Typography component="span" variant="caption">
+                                Kg
+                              </Typography>
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="#1E40AF"
+                              display="block"
+                            >
+                              {vs.outwardBags} Bags
+                            </Typography>
+                          </Box>
+                        </Grid>
+
+                        {/* Closing Balance */}
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderRadius: "12px",
+                              bgcolor: "#111827",
+                              color: "#FFFFFF",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#9CA3AF" }}
+                              fontWeight={700}
+                            >
+                              CLOSING
+                            </Typography>
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={700}
+                              color="#FFFFFF"
+                              mt={0.5}
+                            >
+                              {vs.closingWeight}{" "}
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                sx={{ color: "#9CA3AF" }}
+                              >
+                                Kg
+                              </Typography>
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#10B981" }}
+                              fontWeight={600}
+                              display="block"
+                            >
+                              {vs.closingBags} Bags
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
 
             {/* ========================================================
@@ -1434,7 +1578,6 @@ export default function MonthlyReportPage() {
                       <MenuItem value="ALL">All Varieties</MenuItem>
                       <MenuItem value="A">Variety A</MenuItem>
                       <MenuItem value="B">Variety B</MenuItem>
-                      <MenuItem value="C">Variety C</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

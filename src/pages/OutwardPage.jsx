@@ -470,10 +470,6 @@ spacing={3}
     <MenuItem value="B">
       B
     </MenuItem>
-
-    <MenuItem value="C">
-      C
-    </MenuItem>
   </TextField>
 </Grid>
 

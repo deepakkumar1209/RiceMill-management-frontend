@@ -553,10 +553,6 @@ return (
     <MenuItem value="B">
       B
     </MenuItem>
-
-    <MenuItem value="C">
-      C
-    </MenuItem>
   </TextField>
 </Grid>
 <Grid size={{ xs: 12, md: 8 }}>
