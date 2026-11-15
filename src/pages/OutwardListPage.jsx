@@ -87,6 +87,8 @@ const filteredRows = rows.filter((row) => {
 
     row.item?.toLowerCase().includes(searchText) ||
 
+    row.variety?.toLowerCase().includes(searchText) ||
+
     row.placeOfDeposit?.toLowerCase().includes(searchText) ||
 
     row.lorryNo?.toLowerCase().includes(searchText)
@@ -301,7 +303,7 @@ Sample No
 </TableCell>
 
 <TableCell sx={{fontWeight:700}}>
-Net Weight
+Variety
 </TableCell>
 
 <TableCell sx={{fontWeight:700}}>
@@ -322,6 +324,10 @@ SSG
 
 <TableCell sx={{fontWeight:700}}>
 SWP
+</TableCell>
+
+<TableCell sx={{fontWeight:700}}>
+USB
 </TableCell>
 
 <TableCell sx={{fontWeight:700}}>
@@ -392,27 +398,31 @@ Actions
 </TableCell>
 
 <TableCell>
-{row.netWeight}
+{row.variety || "A"}
 </TableCell>
 
 <TableCell>
-{row.totalNetWeight}
+{row.totalNetWeight ?? row.netWeight ?? "-"}
 </TableCell>
 
 <TableCell>
-{row.balanceRiceDue}
+{row.balanceRiceDue ?? "-"}
 </TableCell>
 
 <TableCell>
-{row.onbg}
+{row.onbg ?? "-"}
 </TableCell>
 
 <TableCell>
-{row.ssg}
+{row.ssg ?? "-"}
 </TableCell>
 
 <TableCell>
-{row.swp}
+{row.swp ?? "-"}
+</TableCell>
+
+<TableCell>
+{row.usb ?? "-"}
 </TableCell>
 
 <TableCell>

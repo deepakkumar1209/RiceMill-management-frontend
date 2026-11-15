@@ -13,6 +13,7 @@ import {
   Snackbar,
   Alert,
   Autocomplete,
+  MenuItem,
 } from "@mui/material";
 
 import Sidebar from "../components/Sidebar";
@@ -28,11 +29,12 @@ import { getDpcs } from "../services/dpcService";
 import { getWarehouses } from "../services/warehouseService";
 import { getVehicles } from "../services/vehicleService";
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function OutwardPage() {
 
 const [searchParams] = useSearchParams();
+const navigate = useNavigate();
 
 const editId = searchParams.get("id");
 
@@ -45,225 +47,193 @@ const [items, setItems] = useState([]);
 const [vehicles, setVehicles] = useState([]);
 
 const [formData, setFormData] = useState({
-
-issueDate:
-new Date().toISOString().substring(0,10),
-
-issueNumber:"",
-
-acknowledgeDate:
-new Date().toISOString().substring(0,10),
-
-acknowledgeNumber:"",
-
-item:"",
-
-
-lorryNo:"",
-
-placeOfDeposit:"",
-
-sampleNo:"",
-
-netWeight:"",
-
-totalNetWeight:"",
-
-balanceRiceDue:"",
-
-onbg:"",
-
-ssg:"",
-
-swp:"",
-
-noOfBags:0,
-
-totalNoOfBags:0,
-
-balanceNoOfBags:0,
-
+  issueDate: new Date().toISOString().substring(0, 10),
+  issueNumber: "",
+  acknowledgeDate: new Date().toISOString().substring(0, 10),
+  acknowledgeNumber: "",
+  item: "",
+  lorryNo: "",
+  variety: "A",
+  placeOfDeposit: "",
+  sampleNo: "",
+  totalNetWeight: "",
+  balanceRiceDue: "",
+  onbg: "",
+  ssg: "",
+  swp: "",
+  usb: "",
+  noOfBags: 0,
+  totalNoOfBags: 0,
+  balanceNoOfBags: 0,
 });
 
-useEffect(()=>{
+useEffect(() => {
+  loadMasters();
 
-loadMasters();
+  if (editId) {
+    loadOutward();
+  }
+}, [editId]);
 
-if(editId){
+const loadMasters = async () => {
+  try {
+    const itemData = await getItems();
+    const dpcData = await getDpcs();
+    const warehouseData = await getWarehouses();
+    const vehicleData = await getVehicles();
 
-loadOutward();
+    setItems(itemData);
+    setVehicles(vehicleData);
 
-}
+    if (!editId) {
+      setFormData((prev) => {
+        const defaultItem = itemData.length > 0 ? itemData[0] : null;
+        const defaultVehicle = vehicleData.length > 0 ? vehicleData[0] : null;
 
-},[]);
+        const selectedItemName = prev.item || (defaultItem ? defaultItem.itemName : "");
+        const currentItem = itemData.find((i) => i.itemName === selectedItemName) || defaultItem;
+        const outturn = Number(currentItem?.outlet || 100);
+        const weight = Number(prev.totalNetWeight || 0);
+        const due = weight > 0 ? Number(((weight * outturn) / 100).toFixed(2)) : "";
 
-const loadMasters = async()=>{
-
-try{
-
-const itemData =
-await getItems();
-
-const dpcData =
-await getDpcs();
-
-const warehouseData =
-await getWarehouses();
-
-const vehicleData =
-await getVehicles();
-
-setItems(itemData);
-
-setVehicles(vehicleData);
-
-}catch(error){
-
-console.log(error);
-
-}
-
+        return {
+          ...prev,
+          item: selectedItemName,
+          lorryNo: prev.lorryNo || (defaultVehicle ? defaultVehicle.vehicleNumber : ""),
+          balanceRiceDue: prev.balanceRiceDue !== "" ? prev.balanceRiceDue : (due !== "" ? String(due) : ""),
+        };
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const loadOutward = async()=>{
+const loadOutward = async () => {
+  try {
+    const data = await getOutward(editId);
 
-try{
-
-const data =
-await getOutward(editId);
-
-setFormData({
-
-...data,
-
-issueDate:data.issueDate
-?.substring(0,10),
-
-acknowledgeDate:data.acknowledgeDate
-?.substring(0,10),
-
-});
-
-}catch(error){
-
-console.log(error);
-
-}
-
+    setFormData({
+      ...data,
+      variety: data.variety ?? "A",
+      totalNetWeight: data.totalNetWeight ?? data.netWeight ?? "",
+      balanceRiceDue: data.balanceRiceDue ?? "",
+      onbg: data.onbg ?? "",
+      ssg: data.ssg ?? "",
+      swp: data.swp ?? "",
+      usb: data.usb ?? "",
+      noOfBags: data.noOfBags ?? 0,
+      totalNoOfBags: data.totalNoOfBags ?? 0,
+      balanceNoOfBags: data.balanceNoOfBags ?? 0,
+      issueDate: data.issueDate ? String(data.issueDate).substring(0, 10) : new Date().toISOString().substring(0, 10),
+      acknowledgeDate: data.acknowledgeDate ? String(data.acknowledgeDate).substring(0, 10) : new Date().toISOString().substring(0, 10),
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const handleChange=(e)=>{
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-const {name,value}=e.target;
+  let updated = {
+    ...formData,
+    [name]: value,
+  };
 
-let updated={
+  if (name === "totalNetWeight") {
+    const weight = Number(value || 0);
+    const selectedItem = items.find((i) => i.itemName === updated.item);
+    const outturn = Number(selectedItem?.outlet || 100);
+    const calculatedDue = weight > 0 ? Number(((weight * outturn) / 100).toFixed(2)) : "";
+    updated.balanceRiceDue = calculatedDue !== "" ? String(calculatedDue) : "";
+  }
 
-...formData,
+  const bags =
+    Number(updated.onbg || 0) +
+    Number(updated.ssg || 0) +
+    Number(updated.swp || 0) +
+    Number(updated.usb || 0);
 
-[name]:value,
+  updated.noOfBags = bags;
+  updated.totalNoOfBags = bags;
+  updated.balanceNoOfBags = bags;
 
+  setFormData(updated);
 };
 
-const bags=
+const resetForm = () => {
+  if (editId) {
+    navigate("/outwards", { replace: true });
+  }
 
-Number(updated.onbg||0)+
+  const defaultItem = items.length ? items[0] : null;
+  const defaultVehicle = vehicles.length ? vehicles[0] : null;
 
-Number(updated.ssg||0)+
-
-Number(updated.swp||0);
-
-updated.noOfBags=bags;
-
-updated.totalNoOfBags=bags;
-
-updated.balanceNoOfBags=bags;
-
-setFormData(updated);
-
+  setFormData({
+    issueDate: new Date().toISOString().substring(0, 10),
+    issueNumber: "",
+    acknowledgeDate: new Date().toISOString().substring(0, 10),
+    acknowledgeNumber: "",
+    item: defaultItem ? defaultItem.itemName : "",
+    lorryNo: defaultVehicle ? defaultVehicle.vehicleNumber : "",
+    variety: "A",
+    placeOfDeposit: "",
+    sampleNo: "",
+    totalNetWeight: "",
+    balanceRiceDue: "",
+    onbg: "",
+    ssg: "",
+    swp: "",
+    usb: "",
+    noOfBags: 0,
+    totalNoOfBags: 0,
+    balanceNoOfBags: 0,
+  });
 };
 
-const resetForm=()=>{
+const handleSubmit = async () => {
+  try {
+    const totalWeight = Number(formData.totalNetWeight || 0);
+    const selectedItem = items.find((i) => i.itemName === formData.item);
+    const outturn = Number(selectedItem?.outlet || 100);
+    const calculatedDue = totalWeight > 0 ? Number(((totalWeight * outturn) / 100).toFixed(2)) : 0;
+    const balanceDue = Number(formData.balanceRiceDue || calculatedDue);
 
-setFormData({
+    const bags =
+      Number(formData.onbg || 0) +
+      Number(formData.ssg || 0) +
+      Number(formData.swp || 0) +
+      Number(formData.usb || 0);
 
-issueDate:
-new Date().toISOString().substring(0,10),
+    const payload = {
+      ...formData,
+      variety: formData.variety || "A",
+      netWeight: totalWeight,
+      totalNetWeight: totalWeight,
+      balanceRiceDue: balanceDue,
+      onbg: Number(formData.onbg || 0),
+      ssg: Number(formData.ssg || 0),
+      swp: Number(formData.swp || 0),
+      usb: Number(formData.usb || 0),
+      noOfBags: bags,
+      totalNoOfBags: bags,
+      balanceNoOfBags: bags,
+    };
 
-issueNumber:"",
+    if (editId) {
+      await updateOutward(editId, payload);
+      setMessage("Outward Updated Successfully");
+    } else {
+      await createOutward(payload);
+      setMessage("Outward Saved Successfully");
+    }
 
-acknowledgeDate:
-new Date().toISOString().substring(0,10),
-
-acknowledgeNumber:"",
-
-item:"",
-
-
-lorryNo:"",
-
-placeOfDeposit:"",
-
-sampleNo:"",
-
-netWeight:"",
-
-totalNetWeight:"",
-
-balanceRiceDue:"",
-
-onbg:"",
-
-ssg:"",
-
-swp:"",
-
-noOfBags:0,
-
-totalNoOfBags:0,
-
-balanceNoOfBags:0,
-
-});
-
-};
-
-const handleSubmit = async()=>{
-
-try{
-
-if(editId){
-
-await updateOutward(
-editId,
-formData
-);
-
-setMessage(
-"Outward Updated Successfully"
-);
-
-}else{
-
-await createOutward(
-formData
-);
-
-setMessage(
-"Outward Saved Successfully"
-);
-
-}
-
-setSuccess(true);
-
-resetForm();
-
-}catch(error){
-
-console.log(error);
-
-}
-
+    setSuccess(true);
+    resetForm();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 return(
@@ -391,6 +361,7 @@ spacing={3}
 
 <Grid size={{ xs: 12, md: 4 }}>
   <Autocomplete
+    disableClearable
     options={items}
     getOptionLabel={(option) =>
       option.itemName || ""
@@ -401,14 +372,18 @@ spacing={3}
           item.itemName === formData.item
       ) || null
     }
-    onChange={(event, newValue) =>
-      setFormData({
-        ...formData,
-        item: newValue
-          ? newValue.itemName
-          : "",
-      })
-    }
+    onChange={(event, newValue) => {
+      const selectedName = newValue ? newValue.itemName : "";
+      const outturn = Number(newValue?.outlet || 100);
+      const weight = Number(formData.totalNetWeight || 0);
+      const calculatedDue = weight > 0 ? Number(((weight * outturn) / 100).toFixed(2)) : "";
+
+      setFormData((prev) => ({
+        ...prev,
+        item: selectedName,
+        balanceRiceDue: calculatedDue !== "" ? String(calculatedDue) : "",
+      }));
+    }}
     renderInput={(params) => (
       <TextField
         {...params}
@@ -424,6 +399,7 @@ spacing={3}
 
 <Grid size={{ xs: 12, md: 4 }}>
   <Autocomplete
+    disableClearable
     options={vehicles}
     getOptionLabel={(option) =>
       option.vehicleNumber || ""
@@ -436,12 +412,12 @@ spacing={3}
       ) || null
     }
     onChange={(event, newValue) =>
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         lorryNo: newValue
           ? newValue.vehicleNumber
           : "",
-      })
+      }))
     }
     renderInput={(params) => (
       <TextField
@@ -476,22 +452,30 @@ spacing={3}
   />
 </Grid>
 
-{/* Net Weight */}
+{/* Variety */}
 
 <Grid size={{ xs: 12, md: 4 }}>
   <TextField
+    select
     fullWidth
-    type="number"
-    label="Net Weight"
-    name="netWeight"
-    value={formData.netWeight}
+    label="Variety"
+    name="variety"
+    value={formData.variety}
     onChange={handleChange}
-  />
+  >
+    <MenuItem value="A">
+      A
+    </MenuItem>
+
+    <MenuItem value="C">
+      C
+    </MenuItem>
+  </TextField>
 </Grid>
 
 {/* Total Net Weight */}
 
-<Grid size={{ xs: 12, md: 4 }}>
+<Grid size={{ xs: 12, md: 6 }}>
   <TextField
     fullWidth
     type="number"
@@ -504,14 +488,17 @@ spacing={3}
 
 {/* Balance Rice Due */}
 
-<Grid size={{ xs: 12, md: 4 }}>
+<Grid size={{ xs: 12, md: 6 }}>
   <TextField
     fullWidth
     type="number"
     label="Balance Rice Due"
     name="balanceRiceDue"
     value={formData.balanceRiceDue}
-    onChange={handleChange}
+    helperText="Auto-calculated from Total Net Weight & Item Outturn"
+    InputProps={{
+      readOnly: true,
+    }}
   />
 </Grid>
 
@@ -542,7 +529,7 @@ spacing={3}
 >
   {/* ONBG */}
 
-  <Grid size={{ xs: 12, md: 4 }}>
+  <Grid size={{ xs: 6, sm: 6, md: 3 }}>
     <TextField
       fullWidth
       label="ONBG"
@@ -555,7 +542,7 @@ spacing={3}
 
   {/* SSG */}
 
-  <Grid size={{ xs: 12, md: 4 }}>
+  <Grid size={{ xs: 6, sm: 6, md: 3 }}>
     <TextField
       fullWidth
       label="SSG"
@@ -568,13 +555,26 @@ spacing={3}
 
   {/* SWP */}
 
-  <Grid size={{ xs: 12, md: 4 }}>
+  <Grid size={{ xs: 6, sm: 6, md: 3 }}>
     <TextField
       fullWidth
       label="SWP"
       name="swp"
       type="number"
       value={formData.swp}
+      onChange={handleChange}
+    />
+  </Grid>
+
+  {/* USB */}
+
+  <Grid size={{ xs: 6, sm: 6, md: 3 }}>
+    <TextField
+      fullWidth
+      label="USB"
+      name="usb"
+      type="number"
+      value={formData.usb}
       onChange={handleChange}
     />
   </Grid>
