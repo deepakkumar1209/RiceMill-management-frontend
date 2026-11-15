@@ -787,85 +787,129 @@ export default function DashboardPage() {
               </Box>
             </Box>
 
-            <Grid container spacing={2.5} sx={{ mb: 2 }}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               {report.bagSummary &&
-                Object.entries(report.bagSummary).map(([key, bag]) => (
-                  <Grid
-                    size={{ xs: 12, sm: 6, md: key === "total" ? 12 : 2.4 }}
-                    key={key}
-                  >
-                    <Card
-                      sx={{
-                        borderRadius: "16px",
-                        border:
-                          key === "total"
-                            ? "2px solid #111827"
-                            : "1px solid #E5E7EB",
-                        bgcolor: key === "total" ? "#F8FAFC" : "#FFFFFF",
-                        boxShadow: "0px 4px 16px rgba(0,0,0,0.03)",
-                      }}
+                Object.entries(report.bagSummary).map(([key, bag]) => {
+                  const isTotal = key === "total";
+                  return (
+                    <Grid
+                      size={{ xs: 12, sm: 6, md: 4, lg: 2 }}
+                      key={key}
                     >
-                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          mb={1}
-                        >
+                      <Card
+                        sx={{
+                          borderRadius: "16px",
+                          border: isTotal ? "1.5px solid #111827" : "1px solid #E2E8F0",
+                          bgcolor: isTotal ? "#111827" : "#FFFFFF",
+                          color: isTotal ? "#FFFFFF" : "inherit",
+                          boxShadow: "0px 4px 16px rgba(0,0,0,0.03)",
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          {/* Header: Icon + Code */}
+                          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+                            <Stack direction="row" spacing={0.8} alignItems="center">
+                              <Box
+                                sx={{
+                                  width: 26,
+                                  height: 26,
+                                  borderRadius: "6px",
+                                  bgcolor: isTotal ? "rgba(255,255,255,0.12)" : "#F1F5F9",
+                                  color: isTotal ? "#34D399" : "#475569",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <ShoppingBagIcon sx={{ fontSize: 16 }} />
+                              </Box>
+                              <Typography
+                                variant="subtitle2"
+                                fontWeight={800}
+                                color={isTotal ? "#FFFFFF" : "#111827"}
+                                sx={{ fontSize: "0.92rem" }}
+                              >
+                                {isTotal ? "TOTAL BAGS" : bag.name}
+                              </Typography>
+                            </Stack>
+                          </Box>
+
+                          {/* Subtitle Label */}
                           <Typography
-                            variant="subtitle2"
-                            fontWeight={800}
-                            color={key === "total" ? "#111827" : "text.primary"}
+                            variant="caption"
+                            sx={{ color: isTotal ? "#9CA3AF" : "text.secondary", fontSize: "0.72rem", display: "block", minHeight: 18 }}
                           >
-                            {bag.name}
+                            {bag.label}
                           </Typography>
-                          <Chip
-                            label={key === "total" ? "All Bags" : key.toUpperCase()}
-                            size="small"
+
+                          {/* Net Available Bags (Primary Metric) */}
+                          <Box sx={{ my: 1.2 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: isTotal ? "#9CA3AF" : "text.secondary",
+                                fontWeight: 700,
+                                fontSize: "0.68rem",
+                                letterSpacing: "0.4px",
+                                display: "block",
+                              }}
+                            >
+                              NET BALANCE
+                            </Typography>
+                            <Typography
+                              variant="h5"
+                              fontWeight={800}
+                              sx={{
+                                color: isTotal
+                                  ? "#34D399"
+                                  : bag.net > 0
+                                  ? "#166534"
+                                  : bag.net < 0
+                                  ? "#DC2626"
+                                  : "#475569",
+                                fontSize: "1.3rem",
+                                lineHeight: 1.2,
+                              }}
+                            >
+                              {bag.net > 0 ? `+${bag.net}` : bag.net}
+                              <Typography component="span" variant="caption" fontWeight={700} ml={0.5} sx={{ color: isTotal ? "#A7F3D0" : "text.secondary" }}>
+                                Bags
+                              </Typography>
+                            </Typography>
+                          </Box>
+
+                          {/* In / Out Spaced Strip */}
+                          <Box
                             sx={{
-                              height: 18,
-                              fontSize: "0.65rem",
-                              fontWeight: 800,
-                              bgcolor: key === "total" ? "#111827" : "#F3F4F6",
-                              color: key === "total" ? "#FFFFFF" : "#4B5563",
+                              p: 0.8,
+                              px: 1,
+                              borderRadius: "8px",
+                              bgcolor: isTotal ? "rgba(255,255,255,0.08)" : "#F8FAFC",
+                              border: isTotal ? "1px solid rgba(255,255,255,0.12)" : "1px solid #E2E8F0",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
                             }}
-                          />
-                        </Stack>
-
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          display="block"
-                          sx={{ minHeight: 18 }}
-                        >
-                          {bag.label}
-                        </Typography>
-
-                        <Divider sx={{ my: 1 }} />
-
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Typography variant="caption" color="#166534" fontWeight={700}>
-                            In: +{bag.inward}
-                          </Typography>
-                          <Typography variant="caption" color="#1E40AF" fontWeight={700}>
-                            Out: -{bag.outward}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            fontWeight={800}
-                            color={bag.net >= 0 ? "#111827" : "#DC2626"}
                           >
-                            Net: {bag.net >= 0 ? `+${bag.net}` : bag.net}
-                          </Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
+                            <Typography variant="caption" sx={{ color: isTotal ? "#86EFAC" : "#166534", fontWeight: 700, fontSize: "0.74rem" }}>
+                              In: +{bag.inward}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: isTotal ? "rgba(255,255,255,0.25)" : "#CBD5E1", fontWeight: 700 }}>
+                              |
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: isTotal ? "#93C5FD" : "#1E40AF", fontWeight: 700, fontSize: "0.74rem" }}>
+                              Out: -{bag.outward}
+                            </Typography>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
             </Grid>
           </>
         )}

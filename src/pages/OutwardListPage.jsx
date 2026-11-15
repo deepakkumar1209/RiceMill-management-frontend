@@ -24,6 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import { printTable } from "../utils/printTable";
 import {
   getOutwards,
   deleteOutward,
@@ -96,6 +97,87 @@ const filteredRows = rows.filter((row) => {
   );
 
 });
+
+const handlePrintOutwards = () => {
+  printTable({
+    title: "RICE MILL MANAGEMENT - OUTWARD TRANSACTIONS REGISTER",
+    subtitle: `Total Outward Entries: ${filteredRows.length}${search ? ` | Search: "${search}"` : ""}`,
+    summary: [
+      { label: "Total Outward Entries", value: `${filteredRows.length}` },
+      {
+        label: "Total Net Weight",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNetWeight || r.netWeight) || 0), 0).toLocaleString()} Kg`,
+      },
+      {
+        label: "Total Bags",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNoOfBags) || 0), 0).toLocaleString()} Bags`,
+      },
+      {
+        label: "Balance Rice Due",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.balanceRiceDue) || 0), 0).toLocaleString()} Kg`,
+      },
+    ],
+    columns: [
+      {
+        label: "Issue Date",
+        align: "center",
+        render: (r) => (r.issueDate ? new Date(r.issueDate).toLocaleDateString("en-GB") : "-"),
+      },
+      { label: "Issue No", key: "issueNumber" },
+      {
+        label: "Ack Date",
+        align: "center",
+        render: (r) => (r.acknowledgeDate ? new Date(r.acknowledgeDate).toLocaleDateString("en-GB") : "-"),
+      },
+      { label: "Ack No", key: "acknowledgeNumber" },
+      { label: "Item", key: "item" },
+      { label: "Lorry No", key: "lorryNo" },
+      { label: "Place of Deposit", key: "placeOfDeposit" },
+      { label: "Sample No", key: "sampleNo" },
+      {
+        label: "Variety",
+        align: "center",
+        render: (r) => `<span class="badge ${r.variety === "A" ? "badge-grade-a" : "badge-common-b"}">${r.variety === "A" ? "Grade A" : r.variety === "B" ? "Common B" : (r.variety || "Grade A")}</span>`,
+      },
+      {
+        label: "Net Wt (Kg)",
+        align: "right",
+        render: (r) => Number(r.totalNetWeight || r.netWeight || 0).toLocaleString(),
+      },
+      {
+        label: "Rice Due (Kg)",
+        align: "right",
+        render: (r) => Number(r.balanceRiceDue || 0).toLocaleString(),
+      },
+      { label: "ONBG", align: "center", render: (r) => r.onbg ?? "-" },
+      { label: "SSG", align: "center", render: (r) => r.ssg ?? "-" },
+      { label: "SWP", align: "center", render: (r) => r.swp ?? "-" },
+      { label: "USB", align: "center", render: (r) => r.usb ?? "-" },
+      {
+        label: "Total Bags",
+        align: "center",
+        render: (r) => Number(r.totalNoOfBags || 0).toLocaleString(),
+      },
+    ],
+    rows: filteredRows,
+    footer: [
+      { content: "TOTAL", colSpan: 9, align: "left" },
+      {
+        content: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNetWeight || r.netWeight) || 0), 0).toLocaleString()} Kg`,
+        align: "right",
+      },
+      {
+        content: `${filteredRows.reduce((sum, r) => sum + (Number(r.balanceRiceDue) || 0), 0).toLocaleString()} Kg`,
+        align: "right",
+      },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.onbg) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.ssg) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.swp) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.usb) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNoOfBags) || 0), 0).toLocaleString()} Bags`, align: "center" },
+    ],
+  });
+};
 
 return (
 <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
@@ -231,7 +313,7 @@ startAdornment:(
 
     <Button
       variant="contained"
-      onClick={() => window.print()}
+      onClick={handlePrintOutwards}
       sx={{
         bgcolor: "#111827",
         textTransform: "none",

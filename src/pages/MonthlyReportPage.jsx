@@ -48,6 +48,7 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import * as XLSX from "xlsx";
 
 import Sidebar from "../components/Sidebar";
+import { printTable } from "../utils/printTable";
 
 import {
   getMonthlyReport,
@@ -477,6 +478,101 @@ export default function MonthlyReportPage() {
       wb,
       `Monthly_Inventory_Report_${safeFrom}_to_${safeTo}.xlsx`
     );
+  };
+
+  // ===========================
+  // PRINT LEDGER TABLE ONLY
+  // ===========================
+  const handlePrintLedger = () => {
+    printTable({
+      title: "RICE MILL MANAGEMENT - MONTHLY TRANSACTION LEDGER",
+      subtitle: `Period: ${fromDate} to ${toDate} | Filter Type: ${filterType} | Item: ${filterItem} | Variety: ${filterVariety === "ALL" ? "All Varieties" : filterVariety === "A" ? "Grade A" : "Common B"}${search ? ` | Search: "${search}"` : ""}`,
+      summary: [
+        { label: "Report Period", value: `${fromDate} to ${toDate}` },
+        { label: "Total Entries", value: `${filteredTransactions.length}` },
+        { label: "Inward Stock", value: `+${(report?.summary?.totalInwardWeight || 0).toLocaleString()} Kg (${report?.summary?.totalInwardBags || 0} Bags)` },
+        { label: "Outward Dispatched", value: `-${(report?.summary?.totalOutwardWeight || 0).toLocaleString()} Kg (${report?.summary?.totalOutwardBags || 0} Bags)` },
+        { label: "Closing Balance", value: `${(report?.summary?.closingWeight || 0).toLocaleString()} Kg (${report?.summary?.closingBags || 0} Bags)` },
+      ],
+      columns: [
+        {
+          label: "Date",
+          align: "center",
+          render: (row) => (row.issueDate ? new Date(row.issueDate).toLocaleDateString("en-GB") : "-"),
+        },
+        {
+          label: "Type",
+          align: "center",
+          render: (row) => `<span class="badge ${row.type === "INWARD" ? "badge-inward" : "badge-outward"}">${row.type}</span>`,
+        },
+        { label: "Issue No", key: "issueNumber" },
+        { label: "Ack No", key: "acknowledgeNumber" },
+        { label: "Item", key: "item" },
+        {
+          label: "Variety",
+          align: "center",
+          render: (row) => `<span class="badge ${row.variety === "A" ? "badge-grade-a" : "badge-common-b"}">${row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : (row.variety || "A")}</span>`,
+        },
+        {
+          label: "Inward Wt (Kg)",
+          align: "right",
+          render: (row) => (row.inwardWeight ? `+${row.inwardWeight.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-"),
+        },
+        {
+          label: "Outward Wt (Kg)",
+          align: "right",
+          render: (row) => (row.outwardWeight ? `-${row.outwardWeight.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-"),
+        },
+        {
+          label: "Balance Wt (Kg)",
+          align: "right",
+          render: (row) => (row.runningWeight ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        },
+        {
+          label: "Inward Bags",
+          align: "center",
+          render: (row) => (row.inwardBags ? `+${row.inwardBags.toLocaleString()}` : "-"),
+        },
+        {
+          label: "Outward Bags",
+          align: "center",
+          render: (row) => (row.outwardBags ? `-${row.outwardBags.toLocaleString()}` : "-"),
+        },
+        {
+          label: "Balance Bags",
+          align: "center",
+          render: (row) => (row.runningBags ?? 0).toLocaleString(),
+        },
+      ],
+      rows: filteredTransactions,
+      footer: [
+        { content: "TOTAL SUMMARY", colSpan: 6, align: "left" },
+        {
+          content: `+${filteredTransactions.reduce((sum, r) => sum + (r.inwardWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kg`,
+          align: "right",
+        },
+        {
+          content: `-${filteredTransactions.reduce((sum, r) => sum + (r.outwardWeight || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kg`,
+          align: "right",
+        },
+        {
+          content: `${(report?.summary?.closingWeight || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kg`,
+          align: "right",
+        },
+        {
+          content: `+${filteredTransactions.reduce((sum, r) => sum + (r.inwardBags || 0), 0).toLocaleString()}`,
+          align: "center",
+        },
+        {
+          content: `-${filteredTransactions.reduce((sum, r) => sum + (r.outwardBags || 0), 0).toLocaleString()}`,
+          align: "center",
+        },
+        {
+          content: `${(report?.summary?.closingBags || 0).toLocaleString()}`,
+          align: "center",
+        },
+      ],
+    });
   };
 
   return (
@@ -2120,7 +2216,7 @@ export default function MonthlyReportPage() {
 
                 <Button
                   variant="outlined"
-                  onClick={() => window.print()}
+                  onClick={handlePrintLedger}
                   startIcon={<PrintIcon />}
                   sx={{
                     borderRadius: "10px",

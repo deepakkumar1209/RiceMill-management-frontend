@@ -10,3 +10,28 @@ body,
   width: 100%;
   min-height: 100vh;
 }
+
+@media print {
+  nav,
+  aside,
+  header,
+  button,
+  .no-print,
+  .MuiDrawer-root,
+  .MuiButton-root,
+  .MuiInputBase-root,
+  .MuiToggleButtonGroup-root,
+  .MuiPagination-root {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .MuiTableContainer-root {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}

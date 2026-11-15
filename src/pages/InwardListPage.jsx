@@ -24,6 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import { printTable } from "../utils/printTable";
 import {
   getInwards,
   deleteInward,
@@ -96,6 +97,95 @@ const filteredRows = rows.filter((row) => {
   );
 
 });
+
+const handlePrintInwards = () => {
+  printTable({
+    title: "RICE MILL MANAGEMENT - INWARD TRANSACTIONS REGISTER",
+    subtitle: `Total Inward Entries: ${filteredRows.length}${search ? ` | Search: "${search}"` : ""}`,
+    summary: [
+      { label: "Total Entries", value: `${filteredRows.length}` },
+      {
+        label: "Total Net Wt",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNetWeight) || 0), 0).toLocaleString()} Kg`,
+      },
+      {
+        label: "Total Bags",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNoOfBags) || 0), 0).toLocaleString()} Bags`,
+      },
+      {
+        label: "Total Rice Due",
+        value: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalRiceDue) || 0), 0).toLocaleString()} Kg`,
+      },
+    ],
+    columns: [
+      {
+        label: "Issue Date",
+        align: "center",
+        render: (r) => (r.issueDate ? new Date(r.issueDate).toLocaleDateString("en-GB").replace(/\//g, "-") : "-"),
+      },
+      {
+        label: "Ack Date",
+        align: "center",
+        render: (r) => (r.acknowledgeDate ? new Date(r.acknowledgeDate).toLocaleDateString("en-GB").replace(/\//g, "-") : "-"),
+      },
+      { label: "Ack No", key: "acknowledgeNumber" },
+      { label: "Issue Memo", key: "issueMemoNo" },
+      { label: "Item", key: "item" },
+      { label: "Godown", key: "dpcFrom" },
+      { label: "Warehouse", key: "warehouse" },
+      { label: "Lorry No", key: "lorryNo" },
+      {
+        label: "Variety",
+        align: "center",
+        render: (r) => `<span class="badge ${r.variety === "A" ? "badge-grade-a" : "badge-common-b"}">${r.variety === "A" ? "Grade A" : r.variety === "B" ? "Common B" : (r.variety || "-")}</span>`,
+      },
+      {
+        label: "Net Wt (Kg)",
+        align: "right",
+        render: (r) => Number(r.totalNetWeight || 0).toLocaleString(),
+      },
+      { label: "NBG", align: "center", render: (r) => r.nbg ?? "-" },
+      { label: "ONB", align: "center", render: (r) => r.onb ?? "-" },
+      { label: "SSG", align: "center", render: (r) => r.ssg ?? "-" },
+      { label: "SWP", align: "center", render: (r) => r.swp ?? "-" },
+      { label: "USB", align: "center", render: (r) => r.usb ?? "-" },
+      {
+        label: "Total Bags",
+        align: "center",
+        render: (r) => Number(r.totalNoOfBags || 0).toLocaleString(),
+      },
+      {
+        label: "Outturn %",
+        align: "center",
+        render: (r) => (r.riceOutturn ? `${r.riceOutturn}%` : "-"),
+      },
+      {
+        label: "Rice Due (Kg)",
+        align: "right",
+        render: (r) => Number(r.totalRiceDue || 0).toLocaleString(),
+      },
+    ],
+    rows: filteredRows,
+    footer: [
+      { content: "TOTAL", colSpan: 9, align: "left" },
+      {
+        content: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNetWeight) || 0), 0).toLocaleString()} Kg`,
+        align: "right",
+      },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.nbg) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.onb) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.ssg) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.swp) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.usb) || 0), 0).toLocaleString()}`, align: "center" },
+      { content: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalNoOfBags) || 0), 0).toLocaleString()} Bags`, align: "center" },
+      { content: "-", align: "center" },
+      {
+        content: `${filteredRows.reduce((sum, r) => sum + (Number(r.totalRiceDue) || 0), 0).toLocaleString()} Kg`,
+        align: "right",
+      },
+    ],
+  });
+};
 
 return (
 <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
@@ -233,7 +323,7 @@ startAdornment:(
 
     <Button
       variant="contained"
-      onClick={() => window.print()}
+      onClick={handlePrintInwards}
       sx={{
         bgcolor: "#111827",
         textTransform: "none",
