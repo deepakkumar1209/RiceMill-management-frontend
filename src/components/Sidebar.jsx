@@ -32,7 +32,7 @@ const navItems = [
   { path: "/users", label: "Users", Icon: Group },
   { path: "/create-user", label: "Create User", Icon: PersonAdd },
   { path: "/items", label: "Items", Icon: Inventory2 },
-  { path: "/dpcs", label: "DPCs", Icon: BusinessIcon },
+  { path: "/dpcs", label: "Godown", Icon: BusinessIcon },
   { path: "/warehouses", label: "Warehouses", Icon: WarehouseIcon },
   { path: "/vehicles", label: "Vehicles", Icon: DirectionsCarIcon },
   { path: "/customer-vendor", label: "Customer/Vendor", Icon: BusinessCenterIcon },

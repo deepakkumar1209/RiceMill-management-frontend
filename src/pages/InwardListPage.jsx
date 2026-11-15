@@ -281,7 +281,7 @@ startAdornment:(
 
     <TableCell sx={{ fontWeight: 700 }}>Item</TableCell>
 
-    <TableCell sx={{ fontWeight: 700 }}>DPC</TableCell>
+    <TableCell sx={{ fontWeight: 700 }}>Godown</TableCell>
 
     <TableCell sx={{ fontWeight: 700 }}>Warehouse</TableCell>
 
@@ -373,7 +373,7 @@ startAdornment:(
 
   {/* Variety */}
   <TableCell>
-    {row.variety || "-"}
+    {row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : (row.variety || "-")}
   </TableCell>
 
   {/* Total Net Weight */}

@@ -475,7 +475,7 @@ return (
   renderInput={(params) => (
     <TextField
       {...params}
-      label="DPC"
+      label="Godown"
     />
   )}
 />
@@ -547,11 +547,11 @@ return (
     onChange={handleChange}
   >
     <MenuItem value="A">
-      A
+      Grade A
     </MenuItem>
 
     <MenuItem value="B">
-      B
+      Common B
     </MenuItem>
   </TextField>
 </Grid>

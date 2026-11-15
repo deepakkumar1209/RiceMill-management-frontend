@@ -398,7 +398,7 @@ Actions
 </TableCell>
 
 <TableCell>
-{row.variety || "A"}
+{row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : (row.variety || "Grade A")}
 </TableCell>
 
 <TableCell>

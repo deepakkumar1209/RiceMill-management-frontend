@@ -280,7 +280,7 @@ export default function MonthlyReportPage() {
 
     (report.varietySummary || []).forEach((v) => {
       varietySheetData.push([
-        `Variety ${v.variety}`,
+        v.variety === "A" ? "Grade A" : v.variety === "B" ? "Common B" : `Variety ${v.variety}`,
         v.openingWeight,
         v.openingBags,
         v.inwardWeight,
@@ -709,7 +709,7 @@ export default function MonthlyReportPage() {
               <Stack direction="row" alignItems="center" spacing={1.5}>
                 <AccountBalanceIcon sx={{ color: "#111827", fontSize: 28 }} />
                 <Typography variant="h5" fontWeight={700}>
-                  Variety Movement & Stock Counts (Variety A & Variety B)
+                  Stock Movement & Counts (Grade A & Common B)
                 </Typography>
               </Stack>
               <Typography color="text.secondary" mt={0.5}>
@@ -748,7 +748,7 @@ export default function MonthlyReportPage() {
                     >
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <Chip
-                          label={`Variety ${vs.variety}`}
+                          label={vs.variety === "A" ? "Grade A" : vs.variety === "B" ? "Common B" : `Variety ${vs.variety}`}
                           sx={{
                             fontWeight: 800,
                             fontSize: "0.9rem",
@@ -760,7 +760,7 @@ export default function MonthlyReportPage() {
                         <Typography variant="subtitle1" fontWeight={700} color="#111827">
                           {vs.variety === "A"
                             ? "Grade A / Fine Quality"
-                            : "Common Variety B"}
+                            : "Common B / Standard"}
                         </Typography>
                       </Stack>
 
@@ -1099,10 +1099,10 @@ export default function MonthlyReportPage() {
                 }}
               >
                 <Typography variant="subtitle1" fontWeight={700} color="#111827">
-                  Variety Counts & Movements Table
+                  Counts & Movements Table (Grade A & Common B)
                 </Typography>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                  Comprehensive comparison of Variety A vs Variety B
+                  Comprehensive comparison of Grade A vs Common B
                 </Typography>
               </Box>
 
@@ -1128,7 +1128,7 @@ export default function MonthlyReportPage() {
                       <TableRow key={vs.variety} hover sx={{ "&:hover": { bgcolor: "#F8FAFC" } }}>
                         <TableCell sx={{ fontWeight: 700 }}>
                           <Chip
-                            label={`Variety ${vs.variety}`}
+                            label={vs.variety === "A" ? "Grade A" : vs.variety === "B" ? "Common B" : `Variety ${vs.variety}`}
                             size="small"
                             sx={{
                               fontWeight: 700,
@@ -1553,7 +1553,7 @@ export default function MonthlyReportPage() {
                         </TableCell>
                         <TableCell>
                           <Chip
-                            label={`Variety ${row.variety || "A"}`}
+                            label={row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : `Variety ${row.variety || "A"}`}
                             size="small"
                             variant="outlined"
                             sx={{
@@ -1846,8 +1846,8 @@ export default function MonthlyReportPage() {
                       onChange={(e) => setFilterVariety(e.target.value)}
                     >
                       <MenuItem value="ALL">All Varieties</MenuItem>
-                      <MenuItem value="A">Variety A</MenuItem>
-                      <MenuItem value="B">Variety B</MenuItem>
+                      <MenuItem value="A">Grade A</MenuItem>
+                      <MenuItem value="B">Common B</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -1966,7 +1966,7 @@ export default function MonthlyReportPage() {
 
                           <TableCell>
                             <Chip
-                              label={`Variety ${row.variety || "A"}`}
+                              label={row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : `Variety ${row.variety || "A"}`}
                               size="small"
                               variant="outlined"
                               sx={{

@@ -464,11 +464,11 @@ spacing={3}
     onChange={handleChange}
   >
     <MenuItem value="A">
-      A
+      Grade A
     </MenuItem>
 
     <MenuItem value="B">
-      B
+      Common B
     </MenuItem>
   </TextField>
 </Grid>

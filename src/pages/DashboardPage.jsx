@@ -585,7 +585,7 @@ export default function DashboardPage() {
                           {/* Variety */}
                           <TableCell>
                             <Chip
-                              label={`Variety ${row.variety || "A"}`}
+                              label={row.variety === "A" ? "Grade A" : row.variety === "B" ? "Common B" : `Variety ${row.variety || "A"}`}
                               size="small"
                               sx={{
                                 fontWeight: 700,

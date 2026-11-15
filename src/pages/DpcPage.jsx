@@ -68,13 +68,13 @@ const handleSubmit = async () => {
       await updateDpc(editId, formData);
 
       setMessage(
-        "DPC Updated Successfully"
+        "Godown Updated Successfully"
       );
     } else {
       await createDpc(formData);
 
       setMessage(
-        "DPC Saved Successfully"
+        "Godown Saved Successfully"
       );
     }
 
@@ -114,7 +114,7 @@ const handleEdit = (dpc) => {
 
 const handleDelete = async (id) => {
   const ok = window.confirm(
-    "Delete DPC?"
+    "Delete Godown?"
   );
 
   if (!ok) return;
@@ -157,7 +157,7 @@ const handleDelete = async (id) => {
             variant="h4"
             fontWeight={700}
           >
-            DPC Master
+            Godown Master
           </Typography>
 
           <Typography
@@ -167,7 +167,7 @@ const handleDelete = async (id) => {
               mt: 1,
             }}
           >
-           Create and manage DPCs
+           Create and manage Godowns
           </Typography>
 
           <Box
@@ -182,7 +182,7 @@ const handleDelete = async (id) => {
               variant="h6"
               fontWeight={600}
             >
-              DPC Information
+              Godown Information
             </Typography>
           </Box>
 
@@ -193,7 +193,7 @@ const handleDelete = async (id) => {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="DPC Name"
+                label="Godown Name"
                 name="dpcName"
                 value={
                   formData.dpcName
@@ -207,7 +207,7 @@ const handleDelete = async (id) => {
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="DPC Number"
+                label="Godown Number"
                 name="dpcNumber"
                 value={
                   formData.dpcNumber
@@ -274,8 +274,8 @@ const handleDelete = async (id) => {
                 fontWeight: 600,
                 }}>
         {editId
-          ? "Update DPC"
-          : "Save DPC"}
+          ? "Update Godown"
+          : "Save Godown"}
 </Button>
 <Button
   variant="outlined"
@@ -420,7 +420,7 @@ const handleDelete = async (id) => {
     severity="success"
     variant="filled"
   >
-    DPC Deleted Successfully
+    Godown Deleted Successfully
   </Alert>
 </Snackbar>
 
