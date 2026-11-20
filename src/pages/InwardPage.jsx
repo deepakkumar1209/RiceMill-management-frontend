@@ -19,7 +19,18 @@ import {
   TableRow,
   MenuItem,
   Autocomplete,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Tooltip,
+  createFilterOptions,
 } from "@mui/material";
+import {
+  Add as AddIcon,
+  DirectionsCar as DirectionsCarIcon,
+} from "@mui/icons-material";
 import {
   createInward,
   getInward,
@@ -38,7 +49,9 @@ import { getDpcs } from "../services/dpcService";
 
 import { getWarehouses } from "../services/warehouseService";
 
-import { getVehicles } from "../services/vehicleService";
+import { getVehicles, createVehicle } from "../services/vehicleService";
+
+const vehicleFilter = createFilterOptions();
 
 export default function InwardPage() {
 const [searchParams] = useSearchParams();
@@ -143,6 +156,80 @@ const [dpcs, setDpcs] = useState([]);
 const [warehouses, setWarehouses] = useState([]);
 
 const [vehicles, setVehicles] = useState([]);
+
+const [lorrySearchInput, setLorrySearchInput] = useState("");
+const [openVehicleDialog, setOpenVehicleDialog] = useState(false);
+const [vehicleDialogData, setVehicleDialogData] = useState({
+  vehicleNumber: "",
+  vehicleType: "Own",
+  driverName: "Self",
+  mobileNumber: "",
+  fuelType: "Diesel",
+});
+const [vehicleSaving, setVehicleSaving] = useState(false);
+const [vehicleError, setVehicleError] = useState("");
+
+const handleOpenAddLorryDialog = (initialNumber = "") => {
+  setVehicleDialogData({
+    vehicleNumber: (initialNumber || lorrySearchInput || "").trim().toUpperCase(),
+    vehicleType: "Own",
+    driverName: "Self",
+    mobileNumber: "",
+    fuelType: "Diesel",
+  });
+  setVehicleError("");
+  setOpenVehicleDialog(true);
+};
+
+const handleSaveNewVehicle = async () => {
+  const number = (vehicleDialogData.vehicleNumber || "").trim().toUpperCase();
+  if (!number) {
+    setVehicleError("Please enter a lorry/vehicle number");
+    return;
+  }
+  const driver = (vehicleDialogData.driverName || "").trim();
+  if (!driver) {
+    setVehicleError("Please enter driver name (or Self)");
+    return;
+  }
+
+  setVehicleSaving(true);
+  setVehicleError("");
+  try {
+    const payload = {
+      vehicleNumber: number,
+      vehicleType: vehicleDialogData.vehicleType || "Own",
+      driverName: driver,
+      mobileNumber: (vehicleDialogData.mobileNumber || "").trim(),
+      fuelType: vehicleDialogData.fuelType || "Diesel",
+    };
+
+    const newVehicle = await createVehicle(payload);
+
+    setVehicles((prev) => {
+      const exists = prev.some(
+        (v) => (v.vehicleNumber || "").toUpperCase() === newVehicle.vehicleNumber.toUpperCase()
+      );
+      return exists ? prev : [...prev, newVehicle];
+    });
+
+    setFormData((prev) => ({
+      ...prev,
+      lorryNo: newVehicle.vehicleNumber,
+    }));
+
+    setMessage(`Lorry ${newVehicle.vehicleNumber} added successfully`);
+    setSuccess(true);
+    setOpenVehicleDialog(false);
+  } catch (err) {
+    console.error("Error creating vehicle:", err);
+    setVehicleError(
+      err?.response?.data?.message || err.message || "Failed to add vehicle"
+    );
+  } finally {
+    setVehicleSaving(false);
+  }
+};
 
 const loadInwards=
 async()=>{
@@ -514,28 +601,126 @@ return (
 </Grid>
 <Grid size={{ xs: 12, md: 3 }}>
 <Autocomplete
-   disableClearable
   fullWidth
+  freeSolo
+  selectOnFocus
+  clearOnBlur
+  handleHomeEndKeys
   options={vehicles}
-  getOptionLabel={(option) => option.vehicleNumber || ""}
+  getOptionLabel={(option) => {
+    if (typeof option === "string") return option;
+    if (option.inputValue) return option.inputValue;
+    return option.vehicleNumber || "";
+  }}
   value={
     vehicles.find(
-      (vehicle) =>
-        vehicle.vehicleNumber === formData.lorryNo
-    ) || null
+      (vehicle) => vehicle.vehicleNumber === formData.lorryNo
+    ) || (formData.lorryNo ? { vehicleNumber: formData.lorryNo } : null)
   }
-  onChange={(event, newValue) =>
-    setFormData({
-      ...formData,
-      lorryNo: newValue
-        ? newValue.vehicleNumber
-        : "",
-    })
-  }
+  filterOptions={(options, params) => {
+    const filtered = vehicleFilter(options, params);
+    const { inputValue } = params;
+    const trimmed = (inputValue || "").trim();
+    const isExisting = options.some(
+      (option) =>
+        (option.vehicleNumber || "").trim().toLowerCase() === trimmed.toLowerCase()
+    );
+    if (trimmed !== "" && !isExisting) {
+      filtered.push({
+        inputValue: trimmed.toUpperCase(),
+        vehicleNumber: `+ Add "${trimmed.toUpperCase()}"`,
+        isNew: true,
+      });
+    }
+    return filtered;
+  }}
+  onChange={(event, newValue) => {
+    if (typeof newValue === "string") {
+      handleOpenAddLorryDialog(newValue.trim().toUpperCase());
+    } else if (newValue && newValue.isNew) {
+      handleOpenAddLorryDialog(newValue.inputValue);
+    } else if (newValue && newValue.vehicleNumber) {
+      setFormData((prev) => ({
+        ...prev,
+        lorryNo: newValue.vehicleNumber,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        lorryNo: "",
+      }));
+    }
+  }}
+  onInputChange={(event, newInputValue) => {
+    setLorrySearchInput(newInputValue);
+  }}
+  renderOption={(props, option) => {
+    const { key, ...otherProps } = props;
+    if (option.isNew) {
+      return (
+        <Box
+          component="li"
+          key={key || "new-lorry-option"}
+          {...otherProps}
+          sx={{
+            fontWeight: 600,
+            color: "#2563EB",
+            bgcolor: "#EFF6FF !important",
+            borderTop: "1px dashed #BFDBFE",
+            my: 0.5,
+            borderRadius: "6px",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            cursor: "pointer",
+          }}
+        >
+          <AddIcon fontSize="small" sx={{ color: "#2563EB" }} />
+          {option.vehicleNumber}
+        </Box>
+      );
+    }
+    return (
+      <Box
+        component="li"
+        key={key || option._id || option.vehicleNumber}
+        {...otherProps}
+      >
+        {option.vehicleNumber}
+      </Box>
+    );
+  }}
   renderInput={(params) => (
     <TextField
       {...params}
       label="Lorry Number"
+      placeholder="Select or type new lorry"
+      InputProps={{
+        ...params.InputProps,
+        endAdornment: (
+          <>
+            <Tooltip title="Add New Lorry">
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenAddLorryDialog(lorrySearchInput.trim().toUpperCase());
+                }}
+                sx={{
+                  color: "#2563EB",
+                  bgcolor: "#EFF6FF",
+                  "&:hover": { bgcolor: "#DBEAFE" },
+                  mr: 0.5,
+                  p: 0.5,
+                }}
+              >
+                <AddIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            {params.InputProps.endAdornment}
+          </>
+        ),
+      }}
     />
   )}
 />
@@ -728,6 +913,169 @@ readOnly:true,
 
 
 </Paper>
+
+    {/* Add Lorry Dialog */}
+    <Dialog
+      open={openVehicleDialog}
+      onClose={() => !vehicleSaving && setOpenVehicleDialog(false)}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: "18px",
+            p: 1,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
+          },
+        },
+      }}
+    >
+      <DialogTitle sx={{ fontWeight: 700, pb: 1, display: "flex", alignItems: "center", gap: 1 }}>
+        <DirectionsCarIcon sx={{ color: "#2563EB" }} />
+        Add New Lorry
+      </DialogTitle>
+      <DialogContent>
+        <Typography variant="body2" sx={{ color: "#6B7280", mb: 3 }}>
+          Save this lorry to Vehicle Master and auto-select it for this inward entry.
+        </Typography>
+
+        {vehicleError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {vehicleError}
+          </Alert>
+        )}
+
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              required
+              label="Lorry / Vehicle Number"
+              value={vehicleDialogData.vehicleNumber}
+              onChange={(e) =>
+                setVehicleDialogData((prev) => ({
+                  ...prev,
+                  vehicleNumber: e.target.value.toUpperCase(),
+                }))
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !vehicleSaving) {
+                  e.preventDefault();
+                  handleSaveNewVehicle();
+                }
+              }}
+              placeholder="e.g. TN28AC4793"
+              autoFocus
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              select
+              fullWidth
+              required
+              label="Vehicle Type"
+              value={vehicleDialogData.vehicleType}
+              onChange={(e) =>
+                setVehicleDialogData((prev) => ({
+                  ...prev,
+                  vehicleType: e.target.value,
+                }))
+              }
+            >
+              <MenuItem value="Own">Own</MenuItem>
+              <MenuItem value="Rent">Rent</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              required
+              label="Driver Name"
+              value={vehicleDialogData.driverName}
+              onChange={(e) =>
+                setVehicleDialogData((prev) => ({
+                  ...prev,
+                  driverName: e.target.value,
+                }))
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !vehicleSaving) {
+                  e.preventDefault();
+                  handleSaveNewVehicle();
+                }
+              }}
+              placeholder="Driver Name or Self"
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label="Mobile Number"
+              value={vehicleDialogData.mobileNumber}
+              onChange={(e) =>
+                setVehicleDialogData((prev) => ({
+                  ...prev,
+                  mobileNumber: e.target.value,
+                }))
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !vehicleSaving) {
+                  e.preventDefault();
+                  handleSaveNewVehicle();
+                }
+              }}
+              placeholder="e.g. 9443263085"
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              select
+              fullWidth
+              label="Fuel Type"
+              value={vehicleDialogData.fuelType}
+              onChange={(e) =>
+                setVehicleDialogData((prev) => ({
+                  ...prev,
+                  fuelType: e.target.value,
+                }))
+              }
+            >
+              <MenuItem value="Diesel">Diesel</MenuItem>
+              <MenuItem value="Petrol">Petrol</MenuItem>
+              <MenuItem value="Electric">Electric</MenuItem>
+            </TextField>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
+        <Button
+          onClick={() => setOpenVehicleDialog(false)}
+          disabled={vehicleSaving}
+          sx={{ textTransform: "none", color: "#6B7280" }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSaveNewVehicle}
+          disabled={vehicleSaving}
+          sx={{
+            textTransform: "none",
+            fontWeight: 600,
+            bgcolor: "#2563EB",
+            "&:hover": { bgcolor: "#1D4ED8" },
+            px: 3,
+            borderRadius: "8px",
+          }}
+        >
+          {vehicleSaving ? "Saving to Database..." : "Add Lorry to Database"}
+        </Button>
+      </DialogActions>
+    </Dialog>
 
 <Snackbar
   open={success}
