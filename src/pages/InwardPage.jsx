@@ -25,7 +25,6 @@ import {
   DialogActions,
   IconButton,
   Tooltip,
-  createFilterOptions,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -50,8 +49,6 @@ import { getDpcs } from "../services/dpcService";
 import { getWarehouses } from "../services/warehouseService";
 
 import { getVehicles, createVehicle } from "../services/vehicleService";
-
-const vehicleFilter = createFilterOptions();
 
 export default function InwardPage() {
 const [searchParams] = useSearchParams();
@@ -600,130 +597,131 @@ return (
 />
 </Grid>
 <Grid size={{ xs: 12, md: 3 }}>
-<Autocomplete
-  fullWidth
-  freeSolo
-  selectOnFocus
-  clearOnBlur
-  handleHomeEndKeys
-  options={vehicles}
-  getOptionLabel={(option) => {
-    if (typeof option === "string") return option;
-    if (option.inputValue) return option.inputValue;
-    return option.vehicleNumber || "";
-  }}
-  value={
-    vehicles.find(
-      (vehicle) => vehicle.vehicleNumber === formData.lorryNo
-    ) || (formData.lorryNo ? { vehicleNumber: formData.lorryNo } : null)
-  }
-  filterOptions={(options, params) => {
-    const filtered = vehicleFilter(options, params);
-    const { inputValue } = params;
-    const trimmed = (inputValue || "").trim();
-    const isExisting = options.some(
-      (option) =>
-        (option.vehicleNumber || "").trim().toLowerCase() === trimmed.toLowerCase()
-    );
-    if (trimmed !== "" && !isExisting) {
-      filtered.push({
-        inputValue: trimmed.toUpperCase(),
-        vehicleNumber: `+ Add "${trimmed.toUpperCase()}"`,
-        isNew: true,
-      });
+  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
+    <Typography variant="body2" sx={{ fontWeight: 600, color: "#374151" }}>
+      Lorry Number
+    </Typography>
+    <Button
+      size="small"
+      startIcon={<AddIcon sx={{ fontSize: "1rem" }} />}
+      onClick={() => handleOpenAddLorryDialog(lorrySearchInput)}
+      sx={{
+        textTransform: "none",
+        fontSize: "0.75rem",
+        fontWeight: 600,
+        color: "#2563EB",
+        py: 0.2,
+        px: 1,
+        borderRadius: "6px",
+        bgcolor: "#EFF6FF",
+        "&:hover": { bgcolor: "#DBEAFE" },
+      }}
+    >
+      + Add Lorry
+    </Button>
+  </Box>
+  <Autocomplete
+    fullWidth
+    freeSolo
+    selectOnFocus
+    clearOnBlur
+    handleHomeEndKeys
+    options={vehicles}
+    isOptionEqualToValue={(option, val) =>
+      (option?.vehicleNumber || "") === (val?.vehicleNumber || val || "")
     }
-    return filtered;
-  }}
-  onChange={(event, newValue) => {
-    if (typeof newValue === "string") {
-      handleOpenAddLorryDialog(newValue.trim().toUpperCase());
-    } else if (newValue && newValue.isNew) {
-      handleOpenAddLorryDialog(newValue.inputValue);
-    } else if (newValue && newValue.vehicleNumber) {
-      setFormData((prev) => ({
-        ...prev,
-        lorryNo: newValue.vehicleNumber,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        lorryNo: "",
-      }));
+    getOptionLabel={(option) => {
+      if (typeof option === "string") return option;
+      if (option.inputValue) return option.inputValue;
+      return option.vehicleNumber || "";
+    }}
+    value={
+      vehicles.find(
+        (vehicle) => vehicle.vehicleNumber === formData.lorryNo
+      ) || (formData.lorryNo ? { vehicleNumber: formData.lorryNo } : null)
     }
-  }}
-  onInputChange={(event, newInputValue) => {
-    setLorrySearchInput(newInputValue);
-  }}
-  renderOption={(props, option) => {
-    const { key, ...otherProps } = props;
-    if (option.isNew) {
+    filterOptions={(options, params) => {
+      const { inputValue } = params;
+      const trimmed = (inputValue || "").trim();
+      const filtered = options.filter((option) =>
+        (option.vehicleNumber || "").toLowerCase().includes(trimmed.toLowerCase())
+      );
+      const isExisting = options.some(
+        (option) =>
+          (option.vehicleNumber || "").trim().toLowerCase() === trimmed.toLowerCase()
+      );
+      if (trimmed !== "" && !isExisting) {
+        filtered.push({
+          inputValue: trimmed.toUpperCase(),
+          vehicleNumber: `+ Add "${trimmed.toUpperCase()}"`,
+          isNew: true,
+        });
+      }
+      return filtered;
+    }}
+    onChange={(event, newValue) => {
+      if (typeof newValue === "string") {
+        handleOpenAddLorryDialog(newValue.trim().toUpperCase());
+      } else if (newValue && newValue.isNew) {
+        handleOpenAddLorryDialog(newValue.inputValue);
+      } else if (newValue && newValue.vehicleNumber) {
+        setFormData((prev) => ({
+          ...prev,
+          lorryNo: newValue.vehicleNumber,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          lorryNo: "",
+        }));
+      }
+    }}
+    onInputChange={(event, newInputValue) => {
+      setLorrySearchInput(newInputValue);
+    }}
+    renderOption={(props, option) => {
+      const { key, ...otherProps } = props;
+      if (option.isNew) {
+        return (
+          <Box
+            component="li"
+            key={key || "new-lorry-option"}
+            {...otherProps}
+            sx={{
+              fontWeight: 600,
+              color: "#2563EB",
+              bgcolor: "#EFF6FF !important",
+              borderTop: "1px dashed #BFDBFE",
+              my: 0.5,
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              cursor: "pointer",
+            }}
+          >
+            <AddIcon fontSize="small" sx={{ color: "#2563EB" }} />
+            {option.vehicleNumber}
+          </Box>
+        );
+      }
       return (
         <Box
           component="li"
-          key={key || "new-lorry-option"}
+          key={key || option._id || option.vehicleNumber}
           {...otherProps}
-          sx={{
-            fontWeight: 600,
-            color: "#2563EB",
-            bgcolor: "#EFF6FF !important",
-            borderTop: "1px dashed #BFDBFE",
-            my: 0.5,
-            borderRadius: "6px",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            cursor: "pointer",
-          }}
         >
-          <AddIcon fontSize="small" sx={{ color: "#2563EB" }} />
           {option.vehicleNumber}
         </Box>
       );
-    }
-    return (
-      <Box
-        component="li"
-        key={key || option._id || option.vehicleNumber}
-        {...otherProps}
-      >
-        {option.vehicleNumber}
-      </Box>
-    );
-  }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Lorry Number"
-      placeholder="Select or type new lorry"
-      InputProps={{
-        ...params.InputProps,
-        endAdornment: (
-          <>
-            <Tooltip title="Add New Lorry">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpenAddLorryDialog(lorrySearchInput.trim().toUpperCase());
-                }}
-                sx={{
-                  color: "#2563EB",
-                  bgcolor: "#EFF6FF",
-                  "&:hover": { bgcolor: "#DBEAFE" },
-                  mr: 0.5,
-                  p: 0.5,
-                }}
-              >
-                <AddIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            {params.InputProps.endAdornment}
-          </>
-        ),
-      }}
-    />
-  )}
-/>
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        placeholder="Search or enter lorry"
+      />
+    )}
+  />
 </Grid>
 <Grid size={{ xs: 12, md: 4 }}>
   <TextField
